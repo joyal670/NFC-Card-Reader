@@ -53,8 +53,8 @@ object AutoJsonFormat : CardImporterString() {
                 input.jsonObjectOrNull?.containsKey("tagId") != true)
             FarebotJsonFormat.readCards(input)
         else
-            // Kotlin 1.3.40 has trouble parsing polymorphs in an abstract tree
             listOf(JsonKotlinFormat.readCard(plain))
+
 }
 
 @Serializable

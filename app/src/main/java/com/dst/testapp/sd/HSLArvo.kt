@@ -36,6 +36,7 @@ data class HSLArvo(override val parsed: En1545Parsed,
         val period = parsed.getIntOrZero(CONTRACT_PERIOD)
         return when (parsed.getIntOrZero(CONTRACT_PERIOD_UNITS)) {
             0 -> "R.plurals.hsl_valid_mins, $period, $period"
+            0 -> "R.plurals.hsl_valid_mins, $period, $period"
             1 -> "R.plurals.hsl_valid_hours, $period, $period"
             2 -> "R.plurals.hsl_valid_days_24h, $period, $period"
             else -> "R.plurals.hsl_valid_days_calendar, $period, $period"

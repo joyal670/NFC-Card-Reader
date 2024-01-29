@@ -114,7 +114,9 @@ class CardBalanceFragment : ListFragment() {
 
             val remainingDays = subscription.remainingDayCount
             if (remainingDays != null) {
-                daysView.text = "R.plurals.remaining_day_count, $remainingDays, $remainingDays"
+                val quantityString = resources.getQuantityString(R.plurals.remaining_day_count, remainingDays, remainingDays)
+                //daysView.text = "R.plurals.remaining_day_count, $remainingDays, $remainingDays"
+                daysView.text = quantityString
                 daysView.visibility = View.VISIBLE
             } else {
                 daysView.visibility = View.GONE
@@ -154,7 +156,9 @@ class CardBalanceFragment : ListFragment() {
 
             if (pax >= 1) {
                 paxTextView.text = "$pax"
-                paxIcon.contentDescription = "R.plurals.passengers, $pax"
+                val quantityString = resources.getQuantityString(R.plurals.passengers, pax)
+               // paxIcon.contentDescription = "R.plurals.passengers, $pax"
+                paxIcon.contentDescription = quantityString
 
                 paxIcon.setImageDrawable(AppCompatResources.getDrawable(context,
                         if (pax == 1) R.drawable.material_ic_person_24dp else R.drawable.material_ic_group_24dp))

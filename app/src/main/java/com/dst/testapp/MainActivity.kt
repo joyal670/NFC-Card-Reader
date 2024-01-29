@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity(), TagReaderFeedbackInterface {
             val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)!!
             val tagId = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID)!!
 
-            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+          /*  val prefs = PreferenceManager.getDefaultSharedPreferences(this)
             val lastReadId = prefs.getString(Preferences.PREF_LAST_READ_ID, "")
             val lastReadAt = prefs.getLong(Preferences.PREF_LAST_READ_AT, 0)
 
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity(), TagReaderFeedbackInterface {
             if (ImmutableByteArray.getHexString(tagId) == lastReadId && GregorianCalendar.getInstance().timeInMillis - lastReadAt < 5000) {
                 finish()
                 return
-            }
+            }*/
 
             ReadingTagTask.doRead(this, tag)
         } catch (ex: Exception) {

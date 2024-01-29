@@ -96,10 +96,10 @@ data class UltralightCard constructor(
             val pageIndexString = idx.hexString
 
             if (sector.isUnauthorized) {
-                ListItem("R.string.unauthorized_page_title_format $pageIndexString",
+                ListItem("Page: $pageIndexString (unauthorized) ",
                         null)
             } else {
-                ListItem("R.string.page_title_format $pageIndexString", sector.data.toHexDump())
+                ListItem("Page: $pageIndexString", sector.data.toHexDump())
             }
         }
 

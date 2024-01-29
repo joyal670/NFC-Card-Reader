@@ -24,7 +24,7 @@ package com.dst.testapp.sd
  * Handle NFCV with no non-default data
  */
 object BlankNFCVTransitFactory : NFCVCardTransitFactory,
-    BlankTransitFactory<NFCVCard> ("R.string.blank_nfcv_card") {
+    BlankTransitFactory<NFCVCard> ("Blank Vicinity card") {
     /**
      * @param card Card to read.
      * @return true if all sectors on the card are blank.

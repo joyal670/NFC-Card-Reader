@@ -15,7 +15,7 @@ sealed class NdefEntry: Parcelable {
             HeaderListItem(name),
             id?.let {
                 ListItem(
-                    "R.string.ndef_id",
+                    "NDEF ID",
                     if (it.isASCII()) it.readASCII() else it.toHexDump()
                 )
             }
@@ -25,11 +25,11 @@ sealed class NdefEntry: Parcelable {
     open val payloadInfo: List<ListItemInterface>
         get() = listOf(
             ListItem(
-               "R.string.ndef_type",
+               "NDEF type",
                 if (type.isASCII()) type.readASCII() else type.toHexDump()
             ),
             ListItem(
-                "R.string.ndef_payload",
+                "NDEF payload",
                 payload.toHexDump()
             ),
         )
@@ -45,7 +45,7 @@ data class NdefEmpty(
     override val payload: ImmutableByteArray
 ) : NdefEntry() {
     override val name: String
-        get() = "R.string.ndef_empty_record"
+        get() = "NDEF empty record"
 }
 
 sealed class NdefRTD : NdefEntry()
@@ -139,15 +139,15 @@ data class NdefText(
     override val payloadInfo: List<ListItemInterface>
         get() = listOf(
             ListItem(
-                "R.string.ndef_text_encoding",
+                "Text encoding",
                 if (isUTF16) "UTF-16" else "UTF-8"
             ),
             ListItem(
-               "R.string.ndef_text_language",
+               "Text language",
                 language
             ),
             ListItem(
-               "R.string.ndef_text",
+               "Text",
                "$text $languageCode"
             )
         )
@@ -200,70 +200,70 @@ data class NdefWifi(
         get() = flatEntries.map {
             when (it.type) {
                 0x1001 -> ListItem(
-                   "R.string.ndef_wifi_ap_channel",
+                   "AP channel",
                     it.value.byteArrayToInt(0, 2).toString()
                 )
                 0x1003 -> ListItem(
-                    "R.string.ndef_wifi_auth_types",
+                    "Authentication types",
                     formatBitmap(it, authTypes, 2)
                 )
                 0x100f -> ListItem(
-                    "R.string.ndef_wifi_enc_types",
+                    "Encryption types",
                     formatBitmap(it, encTypes, 2)
                 )
                 0x1011 -> ListItem(
-                    "R.string.ndef_wifi_device_name",
+                    "Device name",
                     it.value.readUTF8()
                 )
                 0x1020 -> ListItem(
-                    "R.string.ndef_wifi_mac_address",
+                    "MAC address",
                     it.value.joinToString(":") { it2 ->
                         NumberUtils.zeroPad((it2.toInt() and 0xff).toString(16), 2)
                     })
 
                 0x1021 -> ListItem(
-                    "R.string.ndef_wifi_manufacturer",
+                    "Manufacturer",
                 it.value.readLatin1()
                 )
                 0x1023 -> ListItem(
-                    "R.string.ndef_wifi_model_name",
+                    "Model name",
                     it.value.readLatin1()
                 )
                 0x1024 -> ListItem(
-                    "R.string.ndef_wifi_model_number",
+                    "Model number",
                     it.value.readLatin1()
                 )
                 0x1026 -> ListItem(
-                   "R.string.ndef_wifi_network_index",
+                   "Network index",
                     it.value.byteArrayToInt(0, 1).toString()
                 )
                 0x1027 -> ListItem(
-                    "R.string.ndef_wifi_password",
+                    "Password",
                     it.value.readLatin1()
                 )
                 0x103c -> ListItem(
-                    "R.string.ndef_wifi_bands",
+                    "Bands",
                     formatBitmap(it, bands, 1)
                 )
                 0x1042 -> ListItem(
-                    "R.string.ndef_wifi_serial_number",
+                    "Serial number",
                     it.value.readLatin1()
                 )
                 0x1045 -> ListItem(
-                    "R.string.ndef_wifi_ssid",
+                    "SSID",
                     it.value.readLatin1()
                 )
                 0x1047 -> ListItem(
-                   "R.string.ndef_wifi_uuid_enrollee",
+                   "UUID enrollee",
                     formatUUID(it)
                 )
                 0x1048 -> ListItem(
-                    "R.string.ndef_wifi_uuid_registrar",
+                    "UUID registrar",
                     formatUUID(it)
                 )
                 0x1049 -> if (it.value.size >= 5
                     && it.value.byteArrayToInt(0, 3) == 0x372A) {
-                    ListItemRecursive("R.string.ndef_wifi_wfa_extension", null, infoWfaExtension(it.value))
+                    ListItemRecursive("WFA extension", null, infoWfaExtension(it.value))
                 } else {
                     ListItem(
                         "Unknown vendor extension", it.value.toHexDump()
@@ -274,7 +274,7 @@ data class NdefWifi(
                     ("${(it.value[0].toInt() and 0xf0) shr 4}.${it.value[0].toInt() and 0xf}").toString()
                 )
                 0x1061 -> ListItem(
-                    "ndef_wifi_key_provided_automatically",
+                    "Key is provided automatically",
                     if (it.value[0] != 0.toByte()) "Yes" else "No"
                 )
                 else -> ListItem(
@@ -300,18 +300,18 @@ data class NdefWifi(
             entriesFromBytes(payload.drop(3), 1).map {
                 when (it.type) {
                     0 -> ListItem(
-                       "R.string.ndef_wifi_version2",
+                       "Version2",
                         ("${(it.value[0].toInt() and 0xf0) shr 4}.${it.value[0].toInt() and 0xf}").toString()
                     )
                     2 -> ListItem(
-                        "R.string.ndef_wifi_key_is_shareable",
+                        "Key is shareable?",
                         if (it.value[0].toInt() != 0)
-                            "R.string.ndef_wifi_key_is_shareable_yes"
+                            "Yes"
                         else
-                            "R.string.ndef_wifi_key_is_shareable_no"
+                            "No"
                     )
                     else -> ListItem(
-                        "R.string.ndef_wifi_unknown"+ it.type.toString(16) , it.value.toHexDump()
+                        "Unknown "+ it.type.toString(16) , it.value.toHexDump()
                     )
                 }
             }.toList()
@@ -359,7 +359,7 @@ data class NdefWifi(
                 if (builder.isNotEmpty()) {
                     builder.append(", ")
                 }
-                builder.append("R.string.ndef_wifi_bitmap_unknown, $i")
+                builder.append("Unknown $i")
             }
 
             return builder.toString()

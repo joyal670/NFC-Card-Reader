@@ -91,17 +91,17 @@ class KSX6924PurseInfo constructor(val purseInfoData: ImmutableByteArray) : Parc
 
     fun getInfo(resolver: KSX6924PurseInfoResolver = KSX6924PurseInfoDefaultResolver)
             : List<ListItem>? = listOf(
-            ListItem("R.string.cardtype_header", resolver.resolveCardType(cardType)),
-            ListItem("R.string.crypto_algo_header", resolver.resolveCryptoAlgo(alg)),
-            ListItem("R.string.encryption_key_version", vk.hexString),
-            ListItem("R.string.card_issuer", resolver.resolveIssuer(idCenter)),
-            ListItem("R.string.authentication_id", idtr.hexString),
-            ListItem("R.string.ticket_type", resolver.resolveUserCode(userCode)),
-            ListItem("R.string.discount_type", resolver.resolveDisRate(disRate)),
-            ListItem("R.string.maximum_balance", balMax.toString()),
-            ListItem("R.string.branch_code", bra.hexString),
-            ListItem("R.string.one_time_transaction_limit", mmax.toString()),
-            ListItem("R.string.mobile_carrier", resolver.resolveTCode(tcode)),
-            ListItem("R.string.financial_institution_name", resolver.resolveCCode(ccode)),
-            ListItem("R.string.rfu", rfu.getHexString()))
+            ListItem("Card payment terms", resolver.resolveCardType(cardType)),
+            ListItem("Encryption algorithm", resolver.resolveCryptoAlgo(alg)),
+            ListItem("Encryption key version", vk.hexString),
+            ListItem("Issuer", resolver.resolveIssuer(idCenter)),
+            ListItem("Authentication ID", idtr.hexString),
+            ListItem("Ticket type", resolver.resolveUserCode(userCode)),
+            ListItem("Discount type", resolver.resolveDisRate(disRate)),
+            ListItem("Maximum balance", balMax.toString()),
+            ListItem("Branch code", bra.hexString),
+            ListItem("One-time transaction limit", mmax.toString()),
+            ListItem("Mobile carrier", resolver.resolveTCode(tcode)),
+            ListItem("Financial institution name", resolver.resolveCCode(ccode)),
+            ListItem("Reserved for future use", rfu.getHexString()))
 }

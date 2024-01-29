@@ -123,16 +123,13 @@ class HSLTransitData(override val serialNumber: String?,
         private const val CARD_NAME_WALTTI = "Waltti"
         @VisibleForTesting
         val HSL_CARD_INFO = CardInfo(
-
                 name = CARD_NAME_HSL,
-                locationId = "R.string.location_helsinki_finland",
-
+                locationId = "Helsinki, Finland",
                 region = TransitRegion.FINLAND,
                 cardType = CardType.MifareDesfire)
         private val WALTTI_CARD_INFO = CardInfo(
-
                 name = CARD_NAME_WALTTI,
-                locationId = "R.string.location_finland",
+                locationId = "Finland",
                 region = TransitRegion.FINLAND,
                 cardType = CardType.MifareDesfire)
 

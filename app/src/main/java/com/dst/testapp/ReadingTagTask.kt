@@ -2,11 +2,12 @@ package com.dst.testapp
 
 import android.app.AlertDialog
 import android.content.ContentValues
+import android.content.Intent
 import android.net.Uri
 import android.nfc.Tag
 import android.nfc.TagLostException
-import androidx.preference.PreferenceManager
 import android.util.Log
+import androidx.preference.PreferenceManager
 import com.dst.testapp.sd.CardProvider
 import com.dst.testapp.sd.CardReader
 import com.dst.testapp.sd.CardSerializer
@@ -16,7 +17,6 @@ import com.dst.testapp.sd.UnsupportedTagException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-
 import java.util.GregorianCalendar
 
 internal class ReadingTagTask private constructor(
@@ -27,20 +27,18 @@ internal class ReadingTagTask private constructor(
     private fun doInBackground(): Pair<Uri?,Boolean> {
         val card = CardReader.dumpTag(tag, readingTagActivity)
 
-        readingTagActivity.updateStatusText("saving_card")
+        readingTagActivity.updateStatusText("saving card")
 
         val cardXml = CardSerializer.toPersist(card)
 
-        if (true) {
-            if (card.isPartialRead) {
-                Log.w(TAG, "Partial card read.")
-            } else {
-                Log.i(TAG, "Finished dumping card.")
-            }
-            for (line in cardXml.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
+        if (card.isPartialRead) {
+            Log.e(TAG, "Partial card read.")
+        } else {
+            Log.e(TAG, "Finished dumping card.")
+        }
+        for (line in cardXml.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
 
-                Log.d(TAG, "Persist: $line")
-            }
+            Log.e(TAG, "Persist: $line")
         }
 
         val tagIdString = card.tagId.toHexString()
@@ -65,12 +63,19 @@ internal class ReadingTagTask private constructor(
     }
 
     private fun showCard(cardUri: Uri?) {
+        Log.e(TAG, "showCard: $cardUri")
+        readingTagActivity.updateStatusText("Read successfully")
         if (cardUri == null)
             return
-       /* val intent = Intent(Intent.ACTION_VIEW, cardUri)
-        intent.putExtra(CardInfoActivity.SPEAK_BALANCE_EXTRA, true)
-        readingTagActivity.startActivity(intent)
-        readingTagActivity.finish()*/
+
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, cardUri)
+            intent.putExtra(CardInfoActivity.SPEAK_BALANCE_EXTRA, true)
+            readingTagActivity.startActivity(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "showCard: $e" )
+        }
+        // readingTagActivity.finish()
     }
 
     fun onPostExecute(cardUri: Uri?, exception: Exception?, isPartialRead: Boolean) {
@@ -108,6 +113,7 @@ internal class ReadingTagTask private constructor(
         private val TAG = ReadingTagTask::class.java.simpleName
 
         fun doRead(readingTagActivity: MainActivity, tag: Tag) {
+            readingTagActivity.updateStatusText("Reading Card")
             ReadingTagTask(readingTagActivity, tag).start()
         }
     }

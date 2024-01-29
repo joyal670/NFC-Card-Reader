@@ -76,9 +76,9 @@ class ClassicAuthenticator internal constructor(private val mKeys: ClassicKeys,
         feedbackInterface.updateProgressBar(sectorIndex * 5, maxProgress)
 
         if (!isFallback) {
-            feedbackInterface.updateStatusText("R.string.mfc_have_key, $sectorIndex")
+            feedbackInterface.updateStatusText("Trying user-supplied key for sector $sectorIndex")
         } else {
-            feedbackInterface.updateStatusText("R.string.mfc_default_key, $sectorIndex")
+            feedbackInterface.updateStatusText("Trying well-known keys for sector $sectorIndex")
         }
 
         val tries = if (failFast) 1 else mRetryLimit
@@ -101,7 +101,7 @@ class ClassicAuthenticator internal constructor(private val mKeys: ClassicKeys,
             Log.d(TAG, "Attempting authentication with other keys on sector $sectorIndex, try number $tryNum...")
 
             // Attempt authentication with alternate keys
-            feedbackInterface.updateStatusText("R.string.mfc_other_key, $sectorIndex")
+            feedbackInterface.updateStatusText("Trying alternate user-supplied keys for sector $sectorIndex")
 
             // Be a little more forgiving on the key list.  Lets try all the keys!
             //

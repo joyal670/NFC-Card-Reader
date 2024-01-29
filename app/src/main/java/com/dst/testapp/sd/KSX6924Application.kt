@@ -48,7 +48,7 @@ data class KSX6924Application (
         get() {
             val sli = mutableListOf<ListItemInterface>()
             sli.add(ListItemRecursive.collapsedValue(
-                "R.string.tmoney_balance",
+                "T-Money balance",
                     balance.toHexDump()))
 
             for (i in extraRecords.indices) {
@@ -153,7 +153,7 @@ data class KSX6924Application (
                 val extraRecords = ArrayList<ImmutableByteArray>()
 
                 try {
-                    feedbackInterface.updateStatusText("R.string.card_reading_type ${ TMoneyTransitData.CARD_INFO.name}")
+                    feedbackInterface.updateStatusText("Reading ${ TMoneyTransitData.CARD_INFO.name}")
                     feedbackInterface.updateProgressBar(0, 37)
                     feedbackInterface.showCardType(TMoneyTransitData.CARD_INFO)
                     capsule.dumpAllSfis(protocol, feedbackInterface, 0, 32)

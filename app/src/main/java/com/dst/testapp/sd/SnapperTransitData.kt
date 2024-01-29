@@ -43,8 +43,8 @@ class SnapperTransitData(card: KSX6924Application) : TMoneyTransitData(
         private const val NAME = "Snapper"
 
         val CARD_INFO = CardInfo(
-                name = "R.string.card_name_snapper",
-                locationId = "R.string.location_wellington_nz",
+                name = "Snapper",
+                locationId = "Wellington, New Zealand",
 
                 cardType = CardType.ISO7816,
 

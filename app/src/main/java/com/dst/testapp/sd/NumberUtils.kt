@@ -182,7 +182,7 @@ object NumberUtils {
         val hexId = intToHex(datum)
         val res = map[datum]
         return when {
-            res == null -> "R.string.unknown_format" + hexId
+            res == null -> "Unknown $hexId"
             showRaw -> "${conv(res)} [$hexId]"
             else -> conv(res)
         }

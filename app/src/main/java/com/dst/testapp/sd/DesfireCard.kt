@@ -46,10 +46,10 @@ data class DesfireCard constructor(
     private fun makeName(id: Int): String {
         val mifareAID = DesfireApplication.getMifareAID(id)
         if (mifareAID != null) {
-            return "R.string.mfc_aid_title_format"+mifareAID.first.hexString+ mifareAID.second
+            return "MIFARE Classic AID: "+mifareAID.first.hexString+ mifareAID.second
         }
 
-        return "R.string.application_title_format"+ id.hexString
+        return "Application: "+ id.hexString
     }
 
     override fun parseTransitIdentity(): TransitIdentity? {

@@ -72,7 +72,7 @@ object ClassicReader {
                     }
 
                     feedbackInterface.showCardType(ci)
-                    feedbackInterface.updateStatusText("R.string.card_reading_type ${ci.name}")
+                    feedbackInterface.updateStatusText("Reading ${ci.name}")
                     return factory
                 }
         return null
@@ -104,7 +104,7 @@ object ClassicReader {
                     continue
                 }
 
-                feedbackInterface.updateStatusText("R.string.mfc_reading_blocks, $sectorIndex")
+                feedbackInterface.updateStatusText("Reading sector $sectorIndex")
                 var sector = ClassicSector.create(readSectorWithKey(tech, sectorIndex, correctKey))
 
                 // If we used keyA and it wasn't enough try finding B

@@ -33,44 +33,44 @@ data class CEPASApplication(
     override val rawData: List<ListItemInterface>?
         get() = purses.map { (key, value) ->
             ListItemRecursive.collapsedValue(
-                "R.string.cepas_purse_num $key", value.toHexDump())
+                "CEPAS purse number $key", value.toHexDump())
         } + histories.map { (key, value) ->
             ListItemRecursive.collapsedValue(
-                "R.string.cepas_purse_num_history $key", value.toHexDump())
+                "CEPAS purse number $key history", value.toHexDump())
         }
 
     // FIXME: What about other purses?
     override val manufacturingInfo: List<ListItemInterface>?
         get() {
             val purseRaw = getPurse(3) ?: return listOf(
-                    HeaderListItem("R.string.cepas_purse_info"),
-                    ListItem("R.string.error", "R.string.unknown"))
+                    HeaderListItem("Purse info"),
+                    ListItem("Error", "unknown"))
             val purse = CEPASPurse(purseRaw)
 
             return listOf(
-                    ListItem("R.string.cepas_version", purse.cepasVersion.toString()),
-                    ListItem("R.string.cepas_purse_id", "3"),
-                    ListItem("R.string.cepas_purse_status", purse.purseStatus.toString()),
-                    ListItem("R.string.cepas_purse_balance", purse.purseBalance.toString()),
+                    ListItem("CEPAS version", purse.cepasVersion.toString()),
+                    ListItem("Purse ID", "3"),
+                    ListItem("Purse status", purse.purseStatus.toString()),
+                    ListItem("Purse balance", purse.purseBalance.toString()),
 
                    /* ListItem("R.string.cepas_purse_creation_date",
                             TimestampFormatter.longDateFormat(purse.purseCreationDate)),*/
                    /* ListItem("R.string.expiry_date",
                             TimestampFormatter.longDateFormat(purse.purseExpiryDate)),*/
-                    ListItem("R.string.cepas_autoload_amount", purse.autoLoadAmount.toString()),
-                    ListItem("R.string.cepas_can", purse.can.toHexDump()),
-                    ListItem("R.string.cepas_csn", purse.csn.toHexDump()),
+                    ListItem("Autoload amount", purse.autoLoadAmount.toString()),
+                    ListItem("Card Application Number (CAN)", purse.can.toHexDump()),
+                    ListItem("Card Serial Number (CSN)", purse.csn.toHexDump()),
 
-                    HeaderListItem("R.string.cepas_last_txn_info"),
-                    ListItem("R.string.cepas_trp", purse.lastTransactionTRP.toString()),
-                    ListItem("R.string.cepas_credit_trp", purse.lastCreditTransactionTRP.toString()),
-                    ListItem("R.string.cepas_credit_header", purse.lastCreditTransactionHeader.toHexDump()),
-                    ListItem("R.string.cepas_debit_options", purse.lastTransactionDebitOptionsByte.toString()),
+                    HeaderListItem("Info about last transaction"),
+                    ListItem("Transaction Pointer (TRP)", purse.lastTransactionTRP.toString()),
+                    ListItem("Credit Transaction Pointer (TRP)", purse.lastCreditTransactionTRP.toString()),
+                    ListItem("Credit header", purse.lastCreditTransactionHeader.toHexDump()),
+                    ListItem("Debit options", purse.lastTransactionDebitOptionsByte.toString()),
 
-                    HeaderListItem("R.string.cepas_other_purse_info"),
-                    ListItem("R.string.cepas_logfile_record_count", purse.logfileRecordCount.toString()),
-                    ListItem("R.string.cepas_issuer_data_length", purse.issuerDataLength.toString()),
-                    ListItem("R.string.cepas_issuer_data", purse.issuerSpecificData.toHexDump()))
+                    HeaderListItem("Other purse info"),
+                    ListItem("Logfile record count", purse.logfileRecordCount.toString()),
+                    ListItem("Issuer data length", purse.issuerDataLength.toString()),
+                    ListItem("Issuer-specific data", purse.issuerSpecificData.toHexDump()))
         }
 
 

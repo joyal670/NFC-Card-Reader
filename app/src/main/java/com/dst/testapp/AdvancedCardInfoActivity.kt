@@ -87,16 +87,16 @@ class AdvancedCardInfoActivity : AppCompatActivity() {
             scannedAt = TripObfuscator.maybeObfuscateTS(scannedAt)
             val date = TimestampFormatter.dateFormat(scannedAt)
             val time = TimestampFormatter.timeFormat(scannedAt)
-            supportActionBar?.subtitle = "R.string.scanned_at_format, $time, $date"
+            supportActionBar?.subtitle = "Scanned at $time on $date"
         }
 
         if (card.manufacturingInfo != null) {
-            tabsAdapter.addTab("R.string.hw_detail", ::CardHWDetailFragment,
+            tabsAdapter.addTab("Manufacturing info", ::CardHWDetailFragment,
                     intent.extras)
         }
 
         if (card.rawData != null) {
-            tabsAdapter.addTab("R.string.data", ::CardRawDataFragment,
+            tabsAdapter.addTab("Raw Data", ::CardRawDataFragment,
                     intent.extras)
         }
     }

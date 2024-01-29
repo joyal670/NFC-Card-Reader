@@ -287,9 +287,9 @@ object ISO7816TLV {
     }
 
     fun infoWithRaw(buf: ImmutableByteArray) = listOfNotNull(
-            ListItemRecursive.collapsedValue("R.string.iso7816_raw", buf.toHexDump()),
+            ListItemRecursive.collapsedValue("Raw data", buf.toHexDump()),
             try {
-                ListItemRecursive("R.string.iso7816_tlv", null, infoBerTLV(buf))
+                ListItemRecursive("TLV tags", null, infoBerTLV(buf))
             } catch (e: Exception) {
                 null
             })
@@ -436,7 +436,7 @@ object ISO7816TLV {
         multihead: Boolean = false
     ): List<ListItemInterface> {
         val res = mutableListOf<ListItemInterface>(
-            HeaderListItem("R.string.tlv_tags"))
+            HeaderListItem("TLV tags"))
         val unknownIds = mutableSetOf<String>()
         for (tlv in tlvs) {
             val li = if (hideThings) {
@@ -452,7 +452,7 @@ object ISO7816TLV {
         }
 
         if (unknownIds.isNotEmpty()) {
-            res += ListItem("R.string.unknown_tags", unknownIds.joinToString(", "))
+            res += ListItem("Unknown tags", unknownIds.joinToString(", "))
         }
 
         return res

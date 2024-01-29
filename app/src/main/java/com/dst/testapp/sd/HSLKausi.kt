@@ -37,11 +37,11 @@ data class HSLKausi(public override val parsed: En1545Parsed): En1545Subscriptio
     }
 
     override val subscriptionName: String?
-        get() = "R.string.hsl_kausi_format ${ HSLLookup.getArea(parsed, prefix = CONTRACT_PREFIX, isValidity = true)}"
+        get() = "PeriodPass for ${ HSLLookup.getArea(parsed, prefix = CONTRACT_PREFIX, isValidity = true)}"
 
     override val info: List<ListItemInterface>?
         get() = super.info.orEmpty() + listOf(
-                ListItem("R.string.hsl_period ${formatPeriod()}", ) // FIXME: put above separator
+                ListItem("Validity period ${formatPeriod()}", ) // FIXME: put above separator
         )
 
     companion object {

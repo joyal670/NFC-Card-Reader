@@ -36,7 +36,7 @@ class BlankTransitData(private val cardNameRes: String ): TransitData() {
     override val info: List<ListItemInterface>?
         get() = listOf(
                 HeaderListItem("Blank card", headingLevel = 1),
-                TextListItem("R.string.fully_blank_desc")
+                TextListItem("This card appears to be blank. It is formatted but without any data written to it other than a serial number by which it can be uniquely identified and linked to a database.")
         )
 }
 

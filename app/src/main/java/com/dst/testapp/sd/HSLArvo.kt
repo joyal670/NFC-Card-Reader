@@ -49,7 +49,7 @@ data class HSLArvo(override val parsed: En1545Parsed,
             when (prof) {
                 null -> {}
                 1 -> return "Adult"
-                else -> return "R.string.unknown_format, $prof"
+                else -> return "Unknown $prof"
             }
             when (parsed.getInt(CHILD)) {
                 0 -> return "Adult"

@@ -33,7 +33,7 @@ class HSLRefill private constructor(override val parsed: En1545Parsed): En1545Tr
     override val mode: Trip.Mode
         get() = Trip.Mode.TICKET_MACHINE
 
-    override fun getAgencyName(isShort: Boolean) = "R.string.hsl_balance_refill"
+    override fun getAgencyName(isShort: Boolean) = "Balance refill"
     override fun compareTo(other: Transaction): Int {
         return  0
     }

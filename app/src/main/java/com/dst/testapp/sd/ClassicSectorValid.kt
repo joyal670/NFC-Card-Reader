@@ -45,8 +45,8 @@ class ClassicSectorValid(override val raw: ClassicSectorRaw) : ClassicSector() {
 
     override fun getRawData(idx: Int): ListItemInterface {
         val sectorIndex = idx.hexString
-        val keyStrA = keyA?.key?.let { "R.string.classic_key_format_a"+ it.toHexString() }
-        val keyStrB = keyB?.key?.let { "R.string.classic_key_format_b"+ it.toHexString() }
+        val keyStrA = keyA?.key?.let { "Key (A): "+ it.toHexString() }
+        val keyStrB = keyB?.key?.let { "Key (B): "+ it.toHexString() }
         val keyStr = when {
             keyStrA != null && keyStrB != null -> "$keyStrA, $keyStrB"
             keyStrA != null -> keyStrA
@@ -63,16 +63,16 @@ class ClassicSectorValid(override val raw: ClassicSectorRaw) : ClassicSector() {
             val acsSlot = if (blocks.size == 4) blockidx else blockidx / 5
             val acsDescription = acs?.getSlotString(acsSlot)
             if (block.isUnauthorized)
-                bli.add(ListItem("R.string.block_title_format_unauthorized"+ blockidx.hexString + acsDescription))
+                bli.add(ListItem("Block: ${blockidx.hexString + acsDescription} (unauthorized)"))
             else
                 bli.add(ListItemRecursive( blockidx.hexString, acsDescription, listOf(ListItem(null, block.data.toHexDump())))
                 )
         }
         if (isEmpty(idx)) {
-            return ListItemRecursive("R.string.sector_title_format_empty$sectorIndex", keyStr, bli)
+            return ListItemRecursive("Sector: $sectorIndex (empty)", keyStr, bli)
         }
 
-        return ListItemRecursive("R.string.sector_title_format$sectorIndex", keyStr, bli)
+        return ListItemRecursive("Sector: $sectorIndex", keyStr, bli)
 
     }
 }

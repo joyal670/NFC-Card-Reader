@@ -36,7 +36,7 @@ open class TMoneyTransitData internal constructor(
         get() = mPurseInfo.buildTransitBalance(TransitCurrency.KRW(mBalance))
 
     override val cardName: String
-        get() = "R.string.card_name_tmoney"
+        get() = "T-Money"
 
     override val info: List<ListItem>?
         get() = mPurseInfo.getInfo(purseInfoResolver)
@@ -58,15 +58,15 @@ open class TMoneyTransitData internal constructor(
     companion object {
         val CARD_INFO = CardInfo(
 
-                name = "R.string.card_name_tmoney",
-                locationId = "R.string.location_seoul",
+                name = "T-Money",
+                locationId = "Seoul, Korea",
                 cardType = CardType.ISO7816,
                 region = TransitRegion.SOUTH_KOREA,
              )
 
         val FACTORY: KSX6924CardTransitFactory = object : KSX6924CardTransitFactory {
             override fun parseTransitIdentity(card: KSX6924Application) =
-                    TransitIdentity("R.string.card_name_tmoney", card.serial)
+                    TransitIdentity("T-Money", card.serial)
 
             override fun parseTransitData(card: KSX6924Application) =
                     TMoneyTransitData(card)

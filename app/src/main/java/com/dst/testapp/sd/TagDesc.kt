@@ -98,13 +98,13 @@ enum class TagContents : TagContentsInterface {
     FDDA {
         private fun subList(data: ImmutableByteArray): List<ListItem> {
             val sl = mutableListOf(
-                    ListItem("R.string.emv_fdda_version_no", data.byteArrayToInt(0, 1).toString()),
-                    ListItem("R.string.emv_fdda_unpredictable_number", data.getHexString(1, 4)),
-                    ListItem("R.string.emv_fdda_transaction_qualifiers", data.getHexString(5, 2)),
-                    ListItem("R.string.emv_fdda_rfu", data.getHexString(7, 1)),
+                    ListItem("fDDA version number", data.byteArrayToInt(0, 1).toString()),
+                    ListItem("fDDA unpredictable number", data.getHexString(1, 4)),
+                    ListItem("fDDA transaction qualifiers", data.getHexString(5, 2)),
+                    ListItem("fDDA RFU", data.getHexString(7, 1)),
             )
             if (data.size > 8)
-                sl.add(ListItem("R.string.emv_fdda_tail", data.sliceOffLen(8, data.size - 8).toHexDump()))
+                sl.add(ListItem("fDDA remaining bytes", data.sliceOffLen(8, data.size - 8).toHexDump()))
             return sl
         }
         override fun interpretTagString(data: ImmutableByteArray): String =
@@ -147,5 +147,5 @@ enum class TagHiding {
     DATE
 }
 
-val HIDDEN_TAG = TagDesc("R.string.unknown", TagContents.HIDE)
-val UNKNOWN_TAG = TagDesc("R.string.unknown", TagContents.DUMP_UNKNOWN)
+val HIDDEN_TAG = TagDesc("unknown", TagContents.HIDE)
+val UNKNOWN_TAG = TagDesc("unknown", TagContents.DUMP_UNKNOWN)

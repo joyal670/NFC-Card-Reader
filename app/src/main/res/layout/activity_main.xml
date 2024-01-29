@@ -1,71 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
 
-    <EditText
-        android:maxLength="2"
-        android:inputType="number"
-        android:hint="block index"
-        android:id="@+id/blockIndex"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:maxLength="2"
-        android:inputType="number"
-        android:layout_below="@+id/blockIndex"
-        android:hint="sector index"
-        android:id="@+id/sectorIndex"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:hint="data"
-        android:layout_below="@+id/sectorIndex"
-        android:maxLength="16"
-        android:id="@+id/Edittext"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
-    <Button
-        android:layout_below="@+id/Edittext"
-        android:text="History"
+    <TextView
+        android:id="@+id/tvScan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tap to Scan Hafilat Card"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:text="View  History"
         android:id="@+id/btnWrite"
         android:layout_width="wrap_content"
+        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvScan"/>
 
-    <Button
-        android:layout_marginTop="15dp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/btnWrite"
-        android:id="@+id/readbutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Read" />
-
-
-    <Button
-        android:layout_marginTop="15dp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/readbutton"
-        android:id="@+id/reset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="reset" />
-
-    <ScrollView
-        android:layout_below="@+id/reset"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/text"
-            android:layout_centerHorizontal="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </ScrollView>
-
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

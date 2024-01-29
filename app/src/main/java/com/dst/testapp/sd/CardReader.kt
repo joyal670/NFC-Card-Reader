@@ -22,7 +22,7 @@ object CardReader {
         }
 
         if (IsoDep::class.java.name in techs) {
-           // feedbackInterface.updateStatusText(Localizer.localizeString(R.string.iso14a_detect))
+            feedbackInterface.updateStatusText("Detecting ISO 14443 card type…")
 
             // ISO 14443-4 card types
             // This also encompasses NfcA (ISO 14443-3A) and NfcB (ISO 14443-3B)

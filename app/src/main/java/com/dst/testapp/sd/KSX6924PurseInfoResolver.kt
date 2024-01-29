@@ -89,7 +89,7 @@ abstract class KSX6924PurseInfoResolver {
     private fun getOrNone(res: String ?, value: Byte) : String {
         val hexId = NumberUtils.byteToHex(value)
         return when {
-            res == null -> "R.string.unknown_format, $hexId"
+            res == null -> "Unknown $hexId"
             Preferences.showRawStationIds -> "${res} [$hexId]"
             else -> res
         }

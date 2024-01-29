@@ -108,7 +108,7 @@ object ClassicAndroidReader {
 
     fun dumpPlus(tag: CardTransceiver, feedbackInterface: TagReaderFeedbackInterface,
                  atqa: Int, sak: Short): ClassicCard? {
-        feedbackInterface.updateStatusText("R.string.mfp_reading")
+        feedbackInterface.updateStatusText("Reading MIFARE Plus card…")
         feedbackInterface.showCardType(null)
 
         val keyRetriever = getKeyRetriever(MetrodroidApplication.instance)

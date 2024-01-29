@@ -32,6 +32,6 @@ class InvalidClassicSector constructor(override val raw: ClassicSectorRaw) : Cla
         get() = throw IndexOutOfBoundsException("InvalidClassicSector has no blocks")
 
     override fun getRawData(idx: Int): ListItem {
-        return ListItem("R.string.invalid_sector_title_format" +idx.hexString+ raw.error)
+        return ListItem("Sector: ${idx.hexString} (invalid: ${raw.error})")
     }
 }

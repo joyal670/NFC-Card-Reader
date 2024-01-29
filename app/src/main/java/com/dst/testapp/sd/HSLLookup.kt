@@ -96,10 +96,10 @@ object HSLLookup : En1545LookupUnknown() {
                 return null
             }
             if (!isValidity && zone in 1..10) {
-                return "R.string.waltti_city_zone  $regionName ${mapWalttiZone(region, zone)}"
+                return "$regionName zone ${mapWalttiZone(region, zone)} "
             }
             val (start, end) = walttiValiditySplit[zone]
-            return "R.string.waltti_city_zones $regionName ${mapWalttiZone(region, start)} + \" - \" + ${mapWalttiZone(region, end)}"
+            return "$regionName zones ${mapWalttiZone(region, start)} + \" - \" + ${mapWalttiZone(region, end)}"
         }
         val type = parsed.getIntOrZero(contractAreaTypeName(prefix))
         val value = parsed.getIntOrZero(contractAreaName(prefix))
@@ -112,9 +112,9 @@ object HSLLookup : En1545LookupUnknown() {
                 val to = value / 6
                 val num = to - from + 1
                 val zones = (from..to).map { 'A' + it }.toCharArray().concatToString()
-                return "R.plurals.hsl_zones $num, $zones, $num"
+                return "zone $num, $zones, $num"
             } else {
-                return "R.string.hsl_zone_station ${charArrayOf('A' + from).concatToString()}"
+                return "Zone ${charArrayOf('A' + from).concatToString()}"
             }
         }
         if (type == 2) {
@@ -123,13 +123,13 @@ object HSLLookup : En1545LookupUnknown() {
                 val from = value shr 3
                 val num = to - from + 1
                 val zones = (from..to).map { 'A' + it }.toCharArray().concatToString()
-                return "R.plurals.hsl_zones, $num, $zones, $num"
+                return "zone $num, $zones, $num"
             } else {
-                return "R.string.hsl_zone_station  ${ charArrayOf('A' + to).concatToString()}"
+                return "Zone ${ charArrayOf('A' + to).concatToString()}"
             }
         }
         return areaMap[Pair(type, value)]?.let {
             it
-        } ?: "R.string.unknown_format ${type / value}"
+        } ?: "Unknown  ${type / value}"
     }
 }

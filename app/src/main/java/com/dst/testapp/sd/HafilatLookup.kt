@@ -30,10 +30,11 @@ object HafilatLookup : En1545LookupSTR("hafilat") {
 
     internal fun isPurseTariff(agency: Int?, contractTariff: Int?): Boolean = agency == 1 && contractTariff in listOf(0x2710)
 
-    override fun getRouteName(routeNumber: Int?, routeVariant: Int?, agency: Int?, transport: Int?) = "${routeNumber.toString()}"
+    override fun getRouteName(routeNumber: Int?, routeVariant: Int?, agency: Int?, transport: Int?) =
+        routeNumber.toString()
 
     override val subscriptionMap: Map<Int, String> = mapOf(
-            0x2710 to "R.string.adelaide_ticket_type_regular"
+            0x2710 to "Regular"
 
     )
 }

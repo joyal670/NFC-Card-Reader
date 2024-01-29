@@ -50,22 +50,19 @@ class IntercodeTransitData (val capsule: Calypso1545TransitDataCapsule) : Calyps
 
         private val ENVIBUS_CARD_INFO = CardInfo(
                 name = "Envibus",
-
-                locationId = "R.string.location_sophia_antipolis",
+                locationId = "Sophia Antipolis, France",
                 region = TransitRegion.FRANCE,
                 cardType = CardType.ISO7816)
 
         private val TAM_MONTPELLIER_CARD_INFO = CardInfo(
                 name = "TaM", // Transports de l'agglomération de Montpellier
-                locationId = "R.string.location_montpellier",
-
+                locationId = "Montpellier, France",
                 region = TransitRegion.FRANCE,
                 cardType = CardType.ISO7816)
 
         private val KORRIGO_CARD_INFO = CardInfo(
             name = "KorriGo",
-            locationId = "R.string.location_bretagne",
-
+            locationId = "Brittany, France",
             region = TransitRegion.FRANCE,
             cardType = CardType.ISO7816)
 

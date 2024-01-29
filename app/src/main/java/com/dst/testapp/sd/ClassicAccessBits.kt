@@ -34,7 +34,7 @@ class ClassicAccessBits private constructor(private val C1: Int, private val C2:
             val decrement: AccessValues
     ) {
         val string
-            get() = "R.string.mfc_rwid" +read.string + write.string+ increment.string + decrement.string
+            get() = "Read: ${read.string}, write: ${write.string}, increment: ${increment.string}, decrement: ${decrement.string}"
     }
 
     fun getSlotParsed(slot: Int): ParsedAccessBits? {

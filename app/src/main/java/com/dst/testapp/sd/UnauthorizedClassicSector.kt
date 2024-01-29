@@ -32,5 +32,5 @@ class UnauthorizedClassicSector (override val raw: ClassicSectorRaw): ClassicSec
         get() = throw UnauthorizedException()
 
     override fun getRawData(idx: Int) =
-            ListItem("R.string.unauthorized_sector_title_format"+ idx.hexString)
+            ListItem("Sector: ${idx.hexString} (unauthorized)")
 }

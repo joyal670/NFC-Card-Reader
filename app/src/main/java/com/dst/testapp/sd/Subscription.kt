@@ -218,48 +218,48 @@ abstract class Subscription : Parcelable {
         get() {
             val items = mutableListOf<ListItem>()
             if (saleAgencyName != null) {
-                items.add(ListItem("R.string.seller_agency", saleAgencyName))
+                items.add(ListItem("Seller agency", saleAgencyName))
             }
 
             machineId?.let  {
-                items.add(ListItem("R.string.machine_id",
+                items.add(ListItem("Machine ID",
                         it.toString()))
             }
 
             val purchaseTS = purchaseTimestamp
             if (purchaseTS != null) {
-                items.add(ListItem("R.string.purchase_date", purchaseTS.format()))
+                items.add(ListItem("Date purchased", purchaseTS.format()))
             }
 
             val lastUseTS = lastUseTimestamp
             if (lastUseTS != null) {
-                items.add(ListItem("R.string.last_used_on", lastUseTS.format()))
+                items.add(ListItem("Last used", lastUseTS.format()))
             }
 
             val cost = cost
             if (cost != null) {
-                items.add(ListItem("R.string.subscription_cost",
+                items.add(ListItem("Cost",
                         cost.maybeObfuscateFare().formatCurrencyString(true)))
             }
 
             val id = id
             if (id != null) {
-                items.add(ListItem("R.string.subscription_id", id.toString()))
+                items.add(ListItem("Subscription ID", id.toString()))
             }
 
             if (paymentMethod != PaymentMethod.UNKNOWN) {
-                items.add(ListItem("R.string.payment_method", paymentMethod.description))
+                items.add(ListItem("Payment method", paymentMethod.description))
             }
 
             val transferEndTimestamp = transferEndTimestamp
             if (transferEndTimestamp != null && lastUseTS != null) {
-                items.add(ListItem("R.string.free_transfers_until",
+                items.add(ListItem("Free transfers until",
                         transferEndTimestamp.format()))
             }
 
             if (lastUseTS != null) {
                 remainingTripsInDayCount?.let { trips ->
-                    items.add(ListItem("R.string.remaining_trip_count", "remaining_trip_on_day, trips, trips, lastUseTS.format()"))
+                    items.add(ListItem("Trips remaining", "remaining_trip_on_day, $trips, $trips, ${lastUseTS.format()}"))
                 }
             }
 
@@ -267,7 +267,7 @@ abstract class Subscription : Parcelable {
             if (zones != null && zones.isNotEmpty()) {
                 val zonesString = zones.joinToString { it.toString() }
 
-                items.add(ListItem("Localizer.localizePlural(R.plurals.travel_zones, zones.size, zones.size)", zonesString))
+                items.add(ListItem("travel zone ${zones.size}, ${zones.size})", zonesString))
             }
 
             return items.ifEmpty { null }
@@ -277,12 +277,12 @@ abstract class Subscription : Parcelable {
 
     enum class SubscriptionState(val descriptionRes: String ) {
         /** No state is known, display no UI for the state.  */
-        UNKNOWN("R.string.unknown"),
+        UNKNOWN("Unknown"),
 
         /**
          * The subscription is present on the card, but currently disabled.
          */
-        INACTIVE("R.string.subscription_inactive"),
+        INACTIVE("Inactive"),
 
         /**
          * The subscription has been purchased, but never used.
@@ -293,7 +293,7 @@ abstract class Subscription : Parcelable {
          * In systems where a subscription does not have a fixed start date, or does not *yet* have
          * a fixed start date, this means that there are no trips recorded on this subscription.
          */
-        UNUSED("R.string.subscription_unused"),
+        UNUSED("Unused"),
 
         /**
          * The subscription has been purchased, and has started.
@@ -304,7 +304,7 @@ abstract class Subscription : Parcelable {
          * In systems where a subscription does not have a fixed start date, this state should
          * appear after the first trip has been taken.
          */
-        STARTED("R.string.subscription_started"),
+        STARTED("Started"),
 
         /**
          * The subscription has been "used up".
@@ -312,7 +312,7 @@ abstract class Subscription : Parcelable {
          * This is the "final" state when there are a fixed number of trips associated with a
          * subscription, eg: the card holder bought 10 trips, and has taken 10 trips.
          */
-        USED("R.string.subscription_used"),
+        USED("Used"),
 
         /**
          * The subscription has expired.
@@ -320,7 +320,7 @@ abstract class Subscription : Parcelable {
          * This is the "final" state when the card has been scanned after the end date/time of the
          * subscription.
          */
-        EXPIRED("R.string.subscription_expired")
+        EXPIRED("Expired")
     }
 
     /**
@@ -335,9 +335,9 @@ abstract class Subscription : Parcelable {
 
         return when {
             remainingTrips != null && totalTrips != null ->
-                "Localizer.localizePlural(R.plurals.trips_remaining_total, remainingTrips, remainingTrips, totalTrips)"
+                "trips_remaining_total, $remainingTrips $remainingTrips $totalTrips)"
             remainingTrips != null ->
-                "Localizer.localizePlural(R.plurals.trips_remaining, remainingTrips, remainingTrips)"
+                "trips_remaining, $remainingTrips $remainingTrips)"
             else -> null
         }
     }
@@ -346,9 +346,9 @@ abstract class Subscription : Parcelable {
         val validFrom = validFrom?.format()
         val validTo = validTo?.format()
         return when {
-            validFrom != null && validTo != null -> "Localizer.localizeFormatted(R.string.valid_format, validFrom, validTo)"
-            validTo != null -> "Localizer.localizeFormatted(R.string.valid_to_format, validTo)"
-            validFrom != null -> "Localizer.localizeFormatted(R.string.valid_to_format, validFrom)"
+            validFrom != null && validTo != null -> "Valid from $validFrom to $validTo)"
+            validTo != null -> "Valid until $validTo)"
+            validFrom != null -> "Valid until $validFrom)"
             else -> null
         }
     }
@@ -357,15 +357,15 @@ abstract class Subscription : Parcelable {
      * Describes payment methods for a [Subscription].
      */
     enum class PaymentMethod(val description: String) {
-        UNKNOWN("R.string.unknown"),
-        CASH("R.string.payment_method_cash"),
-        CREDIT_CARD("R.string.payment_method_credit_card"),
-        DEBIT_CARD("R.string.payment_method_debit_card"),
-        CHEQUE("R.string.payment_method_cheque"),
+        UNKNOWN("Unknown"),
+        CASH("Cash"),
+        CREDIT_CARD("Credit card"),
+        DEBIT_CARD("Debit card"),
+        CHEQUE("Cheque"),
         /** The payment is made using stored balance on the transit card itself.  */
-        TRANSIT_CARD("R.string.payment_method_transit_card"),
+        TRANSIT_CARD("Transit card"),
         /** The subscription costs nothing (gratis)  */
-        FREE("R.string.payment_method_free")
+        FREE("Free")
     }
 
     data class Formatted (

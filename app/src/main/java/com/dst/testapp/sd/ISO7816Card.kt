@@ -88,12 +88,12 @@ data class ISO7816Card (
             val rawAppData = mutableListOf<ListItemInterface>()
             val appData = app.appFci
             if (appData != null)
-                rawAppData.add(ListItemRecursive("R.string.app_fci", null, ISO7816TLV.infoWithRaw(appData)))
+                rawAppData.add(ListItemRecursive("App FCI", null, ISO7816TLV.infoWithRaw(appData)))
             rawAppData.addAll(app.rawFiles)
             val extra = app.rawData
             if (extra != null)
                 rawAppData.addAll(extra)
-            rawData.add(ListItemRecursive("R.string.application_title_format"+ appTitle, null, rawAppData))
+            rawData.add(ListItemRecursive("Application: $appTitle", null, rawAppData))
         }
         return rawData
     }

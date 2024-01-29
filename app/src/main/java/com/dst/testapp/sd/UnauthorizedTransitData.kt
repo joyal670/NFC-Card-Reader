@@ -32,6 +32,6 @@ abstract class UnauthorizedTransitData : TransitData() {
     override val info: List<ListItemInterface>?
         get() = listOf(
                 HeaderListItem("Fully locked card.", headingLevel = 1),
-                TextListItem(if (isUnlockable) "R.string.fully_locked_desc_unlockable" else "R.string.fully_locked_desc")
+                TextListItem(if (isUnlockable) "No part of this card is freely readable without a key. You have no valid keys installed for it." else "No part of this card is freely readable without a key and currently this format has no practical vulnerabilities.")
         )
 }

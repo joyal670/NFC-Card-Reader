@@ -330,7 +330,7 @@ abstract class Trip : Parcelable {
                 routeName
             } else {
                 // Known route
-                routeName + " [$routeID]"
+                "$routeName [$routeID]"
             }
         }
 
@@ -369,7 +369,7 @@ abstract class Trip : Parcelable {
             }
 
             if (startStationName == null) {
-                return "to, $endStationName)"
+                return "to $endStationName)"
             }
 
             return "start_station $startStationName, end_station $endStationName)"

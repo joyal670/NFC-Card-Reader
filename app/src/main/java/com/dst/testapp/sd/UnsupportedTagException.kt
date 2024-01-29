@@ -30,11 +30,11 @@ class UnsupportedTagProtocolException(private val techList: List<String>, privat
     private val techListText get() = techList.joinToString ("\n  ") { it.replace("android.nfc.tech.", "") }
     override val message get(): String = "Identifier: $tagId\n\nTechnologies: \n$techListText"
 
-    override val dialogMessage get() = "R.string.unsupported_tag_message, $tagId, $techListText"
+    override val dialogMessage get() = "This tag is currently unsupported by This app,\nTag identifier: $tagId\n Supported technologies:$techListText"
 }
 
 class UnknownUltralightException : UnsupportedTagException() {
     override val message get(): String = "Unknown MIFARE Ultralight"
 
-    override val dialogMessage get() = "R.string.unknown_ultralight_message"
+    override val dialogMessage get() = "Unknown MIFARE Ultralight tag"
 }

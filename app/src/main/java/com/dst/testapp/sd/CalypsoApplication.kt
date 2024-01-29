@@ -68,13 +68,13 @@ data class CalypsoApplication (
             val manufactureDate = MANUFACTURE_EPOCH.days(data.byteArrayToInt(25, 2))
 
             return listOfNotNull(
-                    HeaderListItem("R.string.calypso_name"),
+                    HeaderListItem("Calypso"),
                     Preferences.hideCardNumbers.ifFalse {
-                        ListItem("R.string.calypso_serial_number", data.getHexString(12, 8))
+                        ListItem("Serial number", data.getHexString(12, 8))
                     },
-                    ListItem("R.string.calypso_manufacture_country", countryName),
-                    ListItem("R.string.manufacturer_name", manufacturerName),
-                    ListItem("R.string.manufacture_date",
+                    ListItem("Country of manufacture", countryName),
+                    ListItem("Manufacturer", manufacturerName),
+                    ListItem("Date of manufacture",
                             TimestampFormatter.longDateFormat(manufactureDate))
             )
         }

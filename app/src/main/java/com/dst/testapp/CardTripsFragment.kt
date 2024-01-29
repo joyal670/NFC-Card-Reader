@@ -42,6 +42,7 @@ import com.dst.testapp.sd.Preferences
 import com.dst.testapp.sd.TimestampFormatter
 import com.dst.testapp.sd.TransitData
 import com.dst.testapp.sd.Trip
+import com.google.gson.Gson
 import java.util.*
 
 
@@ -57,6 +58,7 @@ class CardTripsFragment : ListFragment() {
         val view = inflater.inflate(R.layout.fragment_card_trips, null)
 
         val trips = mTransitData?.prepareTrips().orEmpty()
+        Log.e(TAG, "onCreateView: ${Gson().toJson(trips)}", )
 
         if (trips.isNotEmpty()) {
             listAdapter = UseLogListAdapter(requireActivity(), trips.toTypedArray())
@@ -146,7 +148,7 @@ class CardTripsFragment : ListFragment() {
                 iconImageView.setImageDrawable(icon)
 
 
-            iconImageView.setImageDrawable(activity.getDrawable(R.drawable.bus))
+            iconImageView.setImageDrawable(AppCompatResources.getDrawable(activity, R.drawable.bus))
 
             iconImageView.contentDescription = "modeContentDescriptionRes"
 
@@ -160,6 +162,7 @@ class CardTripsFragment : ListFragment() {
             val routeText = SpannableStringBuilder()
 
             val agencyName = trip.getAgencyName(true)
+            Log.e(TAG, "getView:agencyName $agencyName" )
             /*if (agencyName != null) {
                 routeText.append(agencyName)
                         .append(" ")
@@ -228,12 +231,12 @@ class CardTripsFragment : ListFragment() {
             when {
                 trip.vehicleID != null -> {
                     Log.e(TAG, "getView:vehicleID ${trip.vehicleID}", )
-                    machineIdTextView.text = "Vehicle ID, ${trip.vehicleID}"
+                    machineIdTextView.text = "Vehicle ID- ${trip.vehicleID}"
                     machineIdTextView.visibility = View.VISIBLE
                 }
                 trip.machineID != null -> {
                     Log.e(TAG, "getView:machineID ${trip.machineID}", )
-                    machineIdTextView.text = "Machine ID, ${trip.machineID}"
+                    machineIdTextView.text = "Machine ID- ${trip.machineID}"
                     machineIdTextView.visibility = View.VISIBLE
                 }
                 else -> machineIdTextView.visibility = View.GONE

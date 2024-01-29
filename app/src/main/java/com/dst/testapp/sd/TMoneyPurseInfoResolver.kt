@@ -31,66 +31,66 @@ package com.dst.testapp.sd
 object TMoneyPurseInfoResolver : KSX6924PurseInfoResolver() {
     override val issuers : Map<Int, String> = mapOf(
             // 0x00: reserved
-            0x01 to "R.string.tmoney_issuer_kftci",
+            0x01 to "Korea Financial Telecommunications and Clearings Institute",
             // 0x02: A-CASH (에이캐시) (Also used by Snapper)
-            0x03 to "R.string.tmoney_issuer_mybi",
+            0x03 to "Mybi",
             // 0x04: reserved
             // 0x05: V-Cash (브이캐시)
-            0x06 to "R.string.tmoney_issuer_mondex",
-            0x07 to "R.string.tmoney_issuer_kec",
-            0x08 to "R.string.tmoney_issuer_kscc",
-            0x09 to "R.string.tmoney_issuer_korail",
+            0x06 to "Mondex Korea",
+            0x07 to "Korea Expressway Corporation",
+            0x08 to "Korea Smart Card Corporation",
+            0x09 to "KORAIL Networks",
             // 0x0a: reserved
-            0x0b to "R.string.tmoney_issuer_eb",
-            0x0c to "R.string.tmoney_issuer_seoul_bus",
-            0x0d to "R.string.tmoney_issuer_cardnet"
+            0x0b to "EB Card Corporation",
+            0x0c to "Seoul Bus Transport Association",
+            0x0d to "Cardnet"
     )
 
     override val userCodes : Map<Int, String > = mapOf(
-            0x01 to "R.string.tmoney_usercode_regular",
-            0x02 to "R.string.tmoney_usercode_child",
+            0x01 to "Regular",
+            0x02 to "Child",
             // TTAK.KO 12.0240 disagrees
-            0x03 to "R.string.tmoney_usercode_youth",
+            0x03 to "Youth",
             // TTAK.KO 12.0240 disagrees
-            0x04 to "R.string.tmoney_usercode_senior",
+            0x04 to "Senior",
             // TTAK.KO 12.0240 disagrees
-            0x05 to "R.string.tmoney_usercode_disabled",
+            0x05 to "Disabled",
             // Only in TTAK.KO 12.0240
-            0x0f to "R.string.tmoney_usercode_test",
-            0x11 to "R.string.tmoney_usercode_bus",
-            0x12 to "R.string.tmoney_usercode_lorry",
-            0xff to "R.string.tmoney_usercode_inactive"
+            0x0f to "Test",
+            0x11 to "Bus (road toll)",
+            0x12 to "Lorry (road toll)",
+            0xff to "Inactive"
     )
 
     override val disRates : Map<Int, String > = mapOf(
-            0x00 to "R.string.tmoney_disrate_none",
-            0x10 to "R.string.tmoney_disrate_disabled_basic",
-            0x11 to "R.string.tmoney_disrate_disabled_companion",
+            0x00 to "No discount",
+            0x10 to "Disabled, basic",
+            0x11 to "Disabled, companion",
             // 0x12 - 0x1f: reserved
-            0x20 to "R.string.tmoney_disrate_veteran_basic",
-            0x21 to "R.string.tmoney_disrate_veteran_companion"
+            0x20 to "Veteran, basic",
+            0x21 to "Veteran, companion"
             // 0x22 - 0x2f: reserved
     )
 
     override val tCodes : Map<Int, String > = mapOf(
-            0x00 to "R.string.none",
-            0x01 to " R.string.tmoney_tcode_sk",
-            0x02 to "R.string.tmoney_tcode_kt",
-            0x03 to "R.string.tmoney_tcode_lg"
+            0x00 to "None",
+            0x01 to "SK Telecom",
+            0x02 to "Korea Telecom",
+            0x03 to "LG U+"
     )
 
     override val cCodes : Map<Int, String > = mapOf(
-            0x00 to "R.string.none",
-            0x01 to "R.string.tmoney_ccode_kb",
-            0x02 to "R.string.tmoney_ccode_nonghyup",
-            0x03 to "R.string.tmoney_ccode_lotte",
-            0x04 to "R.string.tmoney_ccode_bc",
-            0x05 to "R.string.tmoney_ccode_samsung",
-            0x06 to "R.string.tmoney_ccode_shinhan",
-            0x07 to "R.string.tmoney_ccode_citi",
-            0x08 to "R.string.tmoney_ccode_exchange",
-            0x09 to "R.string.tmoney_ccode_woori",
-            0x0a to "R.string.tmoney_ccode_hana_sk",
-            0x0b to "R.string.tmoney_ccode_hyundai"
+            0x00 to "None",
+            0x01 to "KB Kookmin Bank",
+            0x02 to "Nonghyup Bank",
+            0x03 to "Lotte Card",
+            0x04 to "BC Card",
+            0x05 to "Samsung Card",
+            0x06 to "Shinhan Bank",
+            0x07 to "Citibank Korea",
+            0x08 to "Korea Exchange Bank",
+            0x09 to "Woori Bank",
+            0x0a to "Hana SK Card",
+            0x0b to "Hyundai Capital Services"
     )
 }

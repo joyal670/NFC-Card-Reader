@@ -42,9 +42,9 @@ data class ClassicCard constructor(
 
     companion object {
         private val MANUFACTURER_FUDAN = ListItem(
-                "R.string.manufacturer_name", "R.string.manufacturer_fudan_microelectronics")
+                "Manufacturer", "Fudan Microelectronics")
         private val MANUFACTURER_NXP = ListItem(
-                "R.string.manufacturer_name", "R.string.manufacturer_nxp")
+                "Manufacturer", "NXP Semiconductors")
     }
 
     @Transient
@@ -59,15 +59,15 @@ data class ClassicCard constructor(
         // Fudan Microelectronics FM11RF08
         if (block0.sliceOffLen(8, 8) == ImmutableByteArray.fromASCII("bcdefghi"))
                 return listOf(MANUFACTURER_FUDAN,
-                              ListItem("R.string.select_acknowledge", block0.getHexString(5, 1)),
-                              ListItem("R.string.answer_to_request", block0.getHexString(6, 2)))
+                              ListItem("SAK (Select Acknowledge)", block0.getHexString(5, 1)),
+                              ListItem("ATQA (Answer to Request)", block0.getHexString(6, 2)))
 
         val main: List<ListItem> = when {
                 tagId.size == 7 && tagId[0] == 0x04.toByte() -> listOf(
                         MANUFACTURER_NXP,
-                        ListItem("R.string.mfc_uid_mode"," R.plurals.bytes", 7),
-                        ListItem("R.string.select_acknowledge", block0.getHexString(7, 1)),
-                        ListItem("R.string.answer_to_request", block0.getHexString(8, 2))
+                        ListItem("UID length"," R.plurals.bytes", 7),
+                        ListItem("SAK (Select Acknowledge)", block0.getHexString(7, 1)),
+                        ListItem("ATQA (Answer to Request)", block0.getHexString(8, 2))
                         // FIXME: what do the bytes 10-13 mean?
                 )
                 else -> emptyList()
@@ -81,8 +81,8 @@ data class ClassicCard constructor(
 
             // TODO: Show a date here
             listOf(
-                    ListItem("R.string.manufacture_week", week.toString(16)),
-                    ListItem("R.string.manufacture_year", yearD.toString()))
+                    ListItem("Week of manufacture", week.toString(16)),
+                    ListItem("Year of manufacture", yearD.toString()))
         } else { emptyList() }
 
         return main + manufDate

@@ -50,8 +50,8 @@ data class HSLTransaction internal constructor(
         }
         val end = (this.expireTimestamp as? TimestampFull)?.timeInMillis
         val start = (this.timestamp as? TimestampFull)?.timeInMillis
-        val mins = if (start != null && end != null) "R.string.hsl_mins_format ${ ((end - start) / 60000L).toString()}" else null
-        val type = "R.string.hsl_balance_ticket"
+        val mins = if (start != null && end != null) "mins ${ ((end - start) / 60000L).toString()}" else null
+        val type = "Value ticket"
         return (if (mins != null) "$type, $mins" else type)
     }
 

@@ -123,21 +123,20 @@ abstract class En1545Subscription : Subscription() {
             val li = mutableListOf<ListItem>()
             val clas = parsed.getInt(CONTRACT_PASSENGER_CLASS)
             if (clas != null)
-                li.add(ListItem("R.string.passenger_class, clas.toString()"))
+                li.add(ListItem("Class, ${clas.toString()}"))
             val receipt = parsed.getInt(CONTRACT_RECEIPT_DELIVERED)
             if (receipt != null && receipt != 0)
-                li.add(ListItem("Localizer.localizeString(R.string.with_receipt)"))
+                li.add(ListItem("With receipt"))
             if (receipt != null && receipt == 0)
-                li.add(ListItem("Localizer.localizeString(R.string.without_receipt)"))
+                li.add(ListItem("Without receipt"))
             if (parsed.contains(CONTRACT_ORIGIN_1) || parsed.contains(CONTRACT_DESTINATION_1)) {
                 if (parsed.contains(CONTRACT_VIA_1))
-                li.add(ListItem("Localizer.localizeFormatted(R.string.valid_origin_destination_via, getStationName(CONTRACT_ORIGIN_1) getStationName(CONTRACT_DESTINATION_1), getStationName(CONTRACT_VIA_1))"))
+                li.add(ListItem("Valid from ${getStationName(CONTRACT_ORIGIN_1)} to ${getStationName(CONTRACT_DESTINATION_1)} via ${getStationName(CONTRACT_VIA_1)}"))
                 else
-                    li.add(ListItem("Localizer.localizeFormatted(R.string.valid_origin_destination, getStationName(CONTRACT_ORIGIN_1), getStationName(CONTRACT_DESTINATION_1))"))
-
+                    li.add(ListItem("Valid from ${getStationName(CONTRACT_ORIGIN_1)} to ${getStationName(CONTRACT_DESTINATION_1)}"))
             }
             if (parsed.contains(CONTRACT_ORIGIN_2) || parsed.contains(CONTRACT_DESTINATION_2)) {
-                li.add(ListItem("Localizer.localizeFormatted(R.string.valid_origin_destination, getStationName(CONTRACT_ORIGIN_2), getStationName(CONTRACT_DESTINATION_2))"))
+                li.add(ListItem("Valid from ${getStationName(CONTRACT_ORIGIN_2)} to ${getStationName(CONTRACT_DESTINATION_2)}"))
             }
             return super.info.orEmpty() + li
         }

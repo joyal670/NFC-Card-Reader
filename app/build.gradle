@@ -65,15 +65,7 @@ dependencies {
 
     implementation "androidx.multidex:multidex:2.0.1"
 
-    /*implementation('com.github.bmelnychuk:atv:1.2.9') {
-        exclude group: 'com.android.support', module: 'support-v4'
-    }*/
-
-  /*  implementation('com.github.bmelnychuk:atv:1.2.+') {
-        exclude group: 'com.android.support', module: 'support-v4'
-    }*/
-
-   // implementation(project(":shared"))
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 

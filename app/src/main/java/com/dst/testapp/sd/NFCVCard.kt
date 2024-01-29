@@ -34,13 +34,13 @@ data class NFCVCard constructor(
     val pages: List<NFCVPage>,
     override val isPartialRead: Boolean = false) : CardProtocol() {
     override val rawData: List<ListItem>
-        get() = listOf(ListItem("R.string.nfcv_system_info ${sysInfo?.toHexDump()}" )) +pages.mapIndexed { idx, sector ->
+        get() = listOf(ListItem("System info ${sysInfo?.toHexDump()}" )) +pages.mapIndexed { idx, sector ->
             val pageIndexString = idx.hexString
 
             if (sector.isUnauthorized) {
-                ListItem("R.string.unauthorized_page_title_format, $pageIndexString", null)
+                ListItem("Page: $pageIndexString (unauthorized)", null)
             } else {
-                ListItem("R.string.page_title_format, $pageIndexString", sector.data.toHexDump())
+                ListItem("Page: $pageIndexString", sector.data.toHexDump())
             }
         }
 

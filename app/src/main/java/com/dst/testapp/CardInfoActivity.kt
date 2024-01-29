@@ -192,7 +192,7 @@ class CardInfoActivity : AppCompatActivity() {
 
             if (transitData.balances != null || transitData.subscriptions != null) {
                 tabsAdapter.addTab(
-                    "R.string.balances_and_subscriptions",
+                    "Tickets",
                     ::CardBalanceFragment, args
                 )
             }

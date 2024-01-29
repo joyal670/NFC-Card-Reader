@@ -1,0 +1,247 @@
+/*
+ * HSLArvo.kt
+ *
+ * Copyright 2019 Google
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.dst.testapp.sd
+
+
+import androidx.annotation.VisibleForTesting
+import kotlinx.parcelize.Parcelize
+import kotlin.random.Random
+
+@Parcelize
+data class HSLArvo(override val parsed: En1545Parsed,
+                   val lastTransaction: HSLTransaction?,
+                   private val ultralightCity: Int? = null): En1545Subscription() {
+    override val lookup: En1545Lookup
+        get() = HSLLookup
+
+    @VisibleForTesting
+    fun formatPeriod(): String {
+        val period = parsed.getIntOrZero(CONTRACT_PERIOD)
+        return when (parsed.getIntOrZero(CONTRACT_PERIOD_UNITS)) {
+            0 -> "R.plurals.hsl_valid_mins, $period, $period"
+            1 -> "R.plurals.hsl_valid_hours, $period, $period"
+            2 -> "R.plurals.hsl_valid_days_24h, $period, $period"
+            else -> "R.plurals.hsl_valid_days_calendar, $period, $period"
+        }
+    }
+
+    @VisibleForTesting
+    val profile: String?
+        get() {
+            val prof = parsed.getInt(CUSTOMER_PROFILE)
+            when (prof) {
+                null -> {}
+                1 -> return "Adult"
+                else -> return "R.string.unknown_format, $prof"
+            }
+            when (parsed.getInt(CHILD)) {
+                0 -> return "Adult"
+                1 -> return "Child"
+                else -> return null
+            }
+    }
+
+    @VisibleForTesting
+    val language get() = HSLLookup.languageCode(parsed.getInt(LANGUAGE_CODE))
+
+    override val info: List<ListItemInterface>
+        get() = super.info.orEmpty().filter { it.text1.toString() != "Date purchased" } + listOfNotNull(
+                ListItem("Validity period", formatPeriod()), // FIXME: put above separator
+                ListItem("Language", language),
+                profile?.let { ListItem("Customer profile", it) },
+                purchaseTimestamp?.let { ListItem("Date purchased", it.format() + (formatHour(parsed.getInt(CONTRACT_SALE_HOUR)) ?: "")) }
+        )
+
+    override val subscriptionName: String?
+        get() = "eTicket for ${HSLLookup.getArea(parsed, prefix = CONTRACT_PREFIX, isValidity = true, ultralightCity = ultralightCity)}"
+
+    companion object {
+        private const val CONTRACT_PERIOD_UNITS = "ContractPeriodUnits"
+        private const val CONTRACT_PERIOD = "ContractPeriod"
+        private const val CONTRACT_PREFIX = "Contract"
+        private const val LANGUAGE_CODE = "LanguageCode"
+        private const val CHILD = "Child"
+        private const val CUSTOMER_PROFILE = "CustomerProfile"
+        private const val CONTRACT_SALE_HOUR = "ContractSaleHour"
+        private val FIELDS_WALTTI = En1545Container(
+                En1545FixedInteger(HSLLookup.contractWalttiRegionName(CONTRACT_PREFIX), 8),
+                En1545FixedInteger("ProductCode", 14),
+                En1545FixedInteger(CUSTOMER_PROFILE, 5),
+                En1545FixedInteger("CustomerProfileGroup", 5),
+                En1545FixedInteger(LANGUAGE_CODE, 2),
+                En1545FixedInteger(CONTRACT_PERIOD_UNITS, 2),
+                En1545FixedInteger(CONTRACT_PERIOD, 8),
+                En1545FixedInteger(HSLLookup.contractWalttiZoneName(CONTRACT_PREFIX), 6),
+                En1545FixedInteger.date(CONTRACT_SALE),
+                En1545FixedInteger(CONTRACT_SALE_HOUR, 5),
+                En1545FixedInteger("SaleDeviceType", 3), // Unconfirmed
+                En1545FixedInteger(CONTRACT_SALE_DEVICE, 14),  // Unconfirmed
+                En1545FixedInteger(CONTRACT_PRICE_AMOUNT, 14),
+                En1545FixedInteger(CONTRACT_PASSENGER_TOTAL, 6),
+                En1545FixedInteger("SaleStatus", 1),
+                En1545FixedInteger(CONTRACT_UNKNOWN_A, 5),
+                En1545FixedInteger.date(CONTRACT_START),
+                En1545FixedInteger.timeLocal(CONTRACT_START),
+                En1545FixedInteger.date(CONTRACT_END),
+                En1545FixedInteger.timeLocal(CONTRACT_END),
+                En1545FixedInteger("reservedA", 5),
+                En1545FixedInteger("ValidityStatus", 1)
+        )
+
+        private val FIELDS_V1 = En1545Container(
+                En1545FixedInteger("ProductCode", 14),
+                En1545FixedInteger(CHILD, 1),
+                En1545FixedInteger(LANGUAGE_CODE, 2),
+                En1545FixedInteger(CONTRACT_PERIOD_UNITS, 2),
+                En1545FixedInteger(CONTRACT_PERIOD, 8),
+                En1545FixedInteger(HSLLookup.contractAreaTypeName(CONTRACT_PREFIX), 1),
+                En1545FixedInteger(HSLLookup.contractAreaName(CONTRACT_PREFIX), 4),
+                En1545FixedInteger.date(CONTRACT_SALE),
+                En1545FixedInteger(CONTRACT_SALE_HOUR, 5),
+                En1545FixedInteger("SaleDeviceType", 3),
+                En1545FixedInteger(CONTRACT_SALE_DEVICE, 14),
+                En1545FixedInteger(CONTRACT_PRICE_AMOUNT, 14),
+                En1545FixedInteger(CONTRACT_PASSENGER_TOTAL, 5),
+                En1545FixedInteger("SaleStatus", 1),
+                En1545FixedInteger.date(CONTRACT_START),
+                En1545FixedInteger.timeLocal(CONTRACT_START),
+                En1545FixedInteger.date(CONTRACT_END),
+                En1545FixedInteger.timeLocal(CONTRACT_END),
+                En1545FixedInteger("reservedA", 5),
+                En1545FixedInteger("ValidityStatus", 1)
+        )
+
+        private val FIELDS_V1_UL = En1545Container(
+                En1545FixedInteger("ProductCode", 14),
+                En1545FixedInteger(CHILD, 1),
+                En1545FixedInteger(LANGUAGE_CODE, 2),
+                En1545FixedInteger(CONTRACT_PERIOD_UNITS, 2),
+                En1545FixedInteger(CONTRACT_PERIOD, 8),
+                En1545FixedInteger(HSLLookup.contractAreaTypeName(CONTRACT_PREFIX), 1),
+                En1545FixedInteger(HSLLookup.contractAreaName(CONTRACT_PREFIX), 4),
+                En1545FixedInteger.date(CONTRACT_SALE),
+                En1545FixedInteger(CONTRACT_SALE_HOUR, 5),
+                En1545FixedInteger("SaleDeviceType", 3),
+                En1545FixedInteger(CONTRACT_SALE_DEVICE, 14),
+                En1545FixedInteger(CONTRACT_PRICE_AMOUNT, 14),
+                En1545FixedInteger(CONTRACT_PASSENGER_TOTAL, 5),
+                En1545FixedInteger("SaleStatus", 1),
+                En1545FixedHex("Seal1", 48),
+                En1545FixedInteger.date(CONTRACT_START),
+                En1545FixedInteger.timeLocal(CONTRACT_START),
+                En1545FixedInteger.date(CONTRACT_END),
+                En1545FixedInteger.timeLocal(CONTRACT_END),
+                En1545FixedInteger("reservedA", 5),
+                En1545FixedInteger("ValidityStatus", 1)
+        )
+
+        private val FIELDS_V2 = En1545Container(
+                En1545FixedInteger("ProductCodeType", 1),
+                En1545FixedInteger("ProductCode", 14),
+                En1545FixedInteger("ProductCodeGroup", 14),
+                En1545FixedInteger(CUSTOMER_PROFILE, 5),
+                En1545FixedInteger("CustomerProfileGroup", 5),
+                En1545FixedInteger(LANGUAGE_CODE, 2),
+                En1545FixedInteger(CONTRACT_PERIOD_UNITS, 2),
+                En1545FixedInteger(CONTRACT_PERIOD, 8),
+                En1545FixedInteger("ValidityLengthTypeGroup", 2),
+                En1545FixedInteger("ValidityLengthGroup", 8),
+                En1545FixedInteger(HSLLookup.contractAreaTypeName(CONTRACT_PREFIX), 2),
+                En1545FixedInteger(HSLLookup.contractAreaName(CONTRACT_PREFIX), 6),
+                En1545FixedInteger.date(CONTRACT_SALE),
+                En1545FixedInteger(CONTRACT_SALE_HOUR, 5),
+                En1545FixedInteger("SaleDeviceType", 3),
+                En1545FixedInteger("SaleDeviceNumber", 14),
+                En1545FixedInteger(CONTRACT_PRICE_AMOUNT, 14),
+                En1545FixedInteger("TicketFareGroup", 14),
+                En1545FixedInteger(CONTRACT_PASSENGER_TOTAL, 6),
+                En1545FixedInteger("ExtraZone", 1),
+                En1545FixedInteger("PeriodPassValidityArea", 6),
+                En1545FixedInteger("ExtensionProductCode", 14),
+                En1545FixedInteger("Extension1ValidityArea", 6),
+                En1545FixedInteger("Extension1Fare", 14),
+                En1545FixedInteger("Extension2ValidityArea", 6),
+                En1545FixedInteger("Extension2Fare", 14),
+                En1545FixedInteger("SaleStatus", 1),
+                En1545FixedInteger("reservedA", 4),
+                En1545FixedInteger.date(CONTRACT_START) ,
+                En1545FixedInteger.timeLocal(CONTRACT_START),
+                En1545FixedInteger.date(CONTRACT_END),
+                En1545FixedInteger.timeLocal(CONTRACT_END),
+                En1545FixedInteger("ValidityEndDateGroup", 14),
+                En1545FixedInteger("ValidityEndTimeGroup", 11),
+                En1545FixedInteger("reservedB", 5),
+                En1545FixedInteger("ValidityStatus", 1)
+        )
+
+        private val FIELDS_V2_UL = En1545Container(
+                En1545FixedInteger("ProductCode", 10),
+                En1545FixedInteger(CHILD, 1),
+                En1545FixedInteger(LANGUAGE_CODE, 2),
+                En1545FixedInteger(CONTRACT_PERIOD_UNITS, 2),
+                En1545FixedInteger(CONTRACT_PERIOD, 8),
+                En1545FixedInteger(HSLLookup.contractAreaTypeName(CONTRACT_PREFIX), 2),
+                En1545FixedInteger(HSLLookup.contractAreaName(CONTRACT_PREFIX), 6),
+                En1545FixedInteger.date(CONTRACT_SALE),
+                En1545FixedInteger(CONTRACT_SALE_HOUR, 5),
+                En1545FixedInteger("SaleDeviceType", 3),
+                En1545FixedInteger("SaleDeviceNumber", 14),
+                En1545FixedInteger(CONTRACT_PRICE_AMOUNT, 15),
+                En1545FixedInteger(CONTRACT_PASSENGER_TOTAL, 6),
+                En1545FixedHex("Seal1", 48),
+                En1545FixedInteger.date(CONTRACT_START) ,
+                En1545FixedInteger.timeLocal(CONTRACT_START),
+                En1545FixedInteger.date(CONTRACT_END),
+                En1545FixedInteger.timeLocal(CONTRACT_END)
+                // RFU 14 bits and seal2 64 bits
+        )
+
+        fun parse(raw: ImmutableByteArray, version: HSLTransitData.Variant): HSLArvo?  {
+            if (raw.isAllZero())
+                return null
+            val (fields, offset) = when (version) {
+                HSLTransitData.Variant.HSL_V1 -> Pair(FIELDS_V1, 144)
+                HSLTransitData.Variant.HSL_V2 -> Pair(FIELDS_V2, 286)
+                HSLTransitData.Variant.WALTTI -> Pair(FIELDS_WALTTI, 168)
+            }
+            val parsed = En1545Parser.parse(raw, fields)
+            return HSLArvo(parsed,
+                HSLTransaction.parseEmbed(raw = raw, version = version, offset = offset,
+                                          walttiArvoRegion = parsed.getInt(HSLLookup.contractWalttiRegionName(CONTRACT_PREFIX))))
+        }
+        fun parseUL(raw: ImmutableByteArray, version: Int, city: Int): HSLArvo?  {
+            if (raw.isAllZero())
+                return null
+            if (version == 2)
+                return HSLArvo(En1545Parser.parse(raw, FIELDS_V2_UL),
+                        HSLTransaction.parseEmbed(raw = raw, version = HSLTransitData.Variant.HSL_V2,
+                                offset = 264, ultralightCity=city), ultralightCity=city)
+            return HSLArvo(En1545Parser.parse(raw, FIELDS_V1_UL),
+                    HSLTransaction.parseEmbed(raw = raw, version = HSLTransitData.Variant.HSL_V1,
+                            offset = 264, ultralightCity=city), ultralightCity=city)
+        }
+
+        fun formatHour(hour: Int?):  String? {
+            hour ?: return null
+            val obfHour = if (!Preferences.obfuscateTripTimes) hour else ((hour + 21 + Random.nextInt(6)) % 24)
+            return  "${NumberUtils.zeroPad(obfHour,2)}:XX"
+        }
+    }
+}

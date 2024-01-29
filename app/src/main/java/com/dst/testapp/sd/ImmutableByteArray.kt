@@ -1,0 +1,426 @@
+/*
+ * ImmutableByteArray.kt
+ *
+ * Copyright (C) 2014 Eric Butler <eric@codebutler.com>
+ * Copyright (C) 2019 Google
+ * Copyright (C) 2019 Michael Farrell <micolous+git@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.dst.testapp.sd
+
+
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.*
+import kotlinx.serialization.builtins.ByteArraySerializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.element
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlin.experimental.xor
+
+fun ByteArray.toImmutable(): ImmutableByteArray = ImmutableByteArray.fromByteArray(this)
+fun Array<out Number>.toImmutable(): ImmutableByteArray = ImmutableByteArray.ofB(*this)
+
+fun Iterable<ImmutableByteArray>.sum(): ImmutableByteArray =
+    fold(ImmutableByteArray.empty()) {
+            acc, el -> acc + el
+    }
+
+fun Sequence<ImmutableByteArray>.sum(): ImmutableByteArray =
+    fold(ImmutableByteArray.empty()) {
+            acc, el -> acc + el
+    }
+
+@Parcelize
+@Serializable(with = ImmutableByteArray.Companion::class)
+class ImmutableByteArray private constructor(
+        private val mData: ByteArray) :
+        Parcelable, Comparable<ImmutableByteArray>, Collection<Byte> {
+    constructor(len: Int, function: (Int) -> Byte) : this(mData = ByteArray(len, function))
+    constructor(imm: ImmutableByteArray): this(mData = imm.mData)
+    constructor(len: Int) : this(mData = ByteArray(len))
+
+
+
+    @Transient
+    val dataCopy: ByteArray
+        get() = mData.copyOf()
+    @Transient
+    override val size
+        get() = mData.size
+    @Transient
+    val lastIndex
+        get() = mData.lastIndex
+
+    override fun equals(other: Any?) = other is ImmutableByteArray && mData.contentEquals(other.mData)
+
+    override fun hashCode() = mData.contentHashCode()
+
+    fun toHexString() = getHexString(0, size)
+    fun getHexString() = getHexString(0, size)
+
+    override fun toString() = "<${toHexString()}>"
+
+    override fun compareTo(other: ImmutableByteArray) = toHexString().compareTo(other.toHexString())
+    fun byteArrayToInt(offset: Int, len: Int): Int = byteArrayToLong(offset, len).toInt()
+    fun isAllZero(): Boolean = mData.all { it == 0.toByte() }
+    fun isAllFF(): Boolean = mData.all { it == 0xff.toByte() }
+    fun getBitsFromBuffer(offset: Int, len: Int): Int = getBitsFromBuffer(mData, offset, len)
+    fun getBitsFromBufferLeBits(off: Int, len: Int) = getBitsFromBufferLeBits(mData, off, len)
+    fun getBitsFromBufferSigned(off: Int, len: Int): Int {
+        val unsigned = getBitsFromBuffer(off, len)
+        return unsignedToTwoComplement(unsigned, len - 1)
+    }
+    fun getBitsFromBufferSignedLeBits(off: Int, len: Int): Int {
+        val unsigned = getBitsFromBufferLeBits(off, len)
+        return unsignedToTwoComplement(unsigned, len - 1)
+    }
+    fun convertBCDtoInteger() : Int = fold(0) {
+        x, y -> (x * 100) + NumberUtils.convertBCDtoInteger(y)
+    }
+    fun convertBCDtoInteger(offset: Int, len: Int) : Int = sliceOffLen(offset, len).convertBCDtoInteger()
+    fun convertBCDtoLong() : Long = fold(0L) {
+        x, y -> (x * 100L) + NumberUtils.convertBCDtoInteger(y).toLong()
+    }
+    fun convertBCDtoLong(offset: Int, len: Int) : Long = sliceOffLen(offset, len).convertBCDtoLong()
+
+    operator fun get(i: Int) = mData[i]
+    fun isNotEmpty() = mData.isNotEmpty()
+    operator fun plus(second: ImmutableByteArray) = ImmutableByteArray(this.mData + second.mData)
+    operator fun plus(second: ByteArray) = ImmutableByteArray(this.mData + second)
+    operator fun plus(second: Byte) = ImmutableByteArray(this.mData + second)
+    fun sliceArray(intRange: IntRange) = ImmutableByteArray(mData = mData.sliceArray(intRange))
+    fun sliceOffLen(off: Int, datalen: Int) = sliceArray(off until (off + datalen))
+    fun drop(off: Int) = sliceOffLen(off, size - off)
+    fun toHexDump() = getHexDump(mData, 0, mData.size)
+    fun byteArrayToInt() = byteArrayToInt(0, mData.size)
+    fun <T> fold(l: T, function: (T, Byte) -> T): T = mData.fold(l, function)
+    fun all(function: (Byte) -> Boolean): Boolean = mData.all(function)
+    fun any(function: (Byte) -> Boolean): Boolean = mData.any(function)
+    fun getHexString(offset: Int, length: Int): String = getHexString(mData, offset, length)
+
+    fun byteArrayToIntReversed(off: Int, len: Int) = byteArrayToLongReversed(off, len).toInt()
+    fun byteArrayToIntReversed() = byteArrayToIntReversed(0, size)
+    fun byteArrayToLongReversed(off: Int, len: Int) = byteArrayToLong(
+            ByteArray(len) { mData[off + len - 1 - it] }, 0, len)
+
+    fun byteArrayToLongReversed() = byteArrayToLongReversed(0, size)
+    fun isASCII() = mData.all {
+        (it in 0x20..0x7f) || it == 0xd.toByte() || it == 0xa.toByte()
+    }
+
+    fun byteArrayToLong(off: Int, len: Int) = byteArrayToLong(mData, off, len)
+    fun byteArrayToLong() = byteArrayToLong(0, mData.size)
+    fun copyOfRange(start: Int, end: Int) = ImmutableByteArray(mData.copyOfRange(start, end))
+    fun contentEquals(other: ImmutableByteArray) = mData.contentEquals(other.mData)
+    fun reverseBuffer() =
+            ImmutableByteArray(ByteArray(mData.size) { x -> mData[mData.size - x - 1] })
+
+    fun contentEquals(other: ByteArray) = mData.contentEquals(other)
+    fun startsWith(other: ByteArray) =
+            mData.size >= other.size &&
+            mData.sliceArray(other.indices).contentEquals(other)
+    fun startsWith(other: ImmutableByteArray) = startsWith(other.mData)
+
+    /**
+     * Returns the first index of [needle], or `-1` if it does not contain [needle].
+     *
+     * @param needle Array to search for
+     * @param start Index to start searching from. Defaults to the start of the array.
+     * @param end Index to end searching at. Defaults to the end of the array.
+     */
+    fun indexOf(needle: ImmutableByteArray, start: Int = 0, end: Int = size): Int {
+        val needleSize = needle.size
+
+        if (start < 0 || start > lastIndex || end > size || start > end
+            || start > end - needleSize) {
+            // Impossible request
+            return -1
+        }
+
+        if (needle.isEmpty()) {
+            // We can search for nothing in the space of something
+            return start
+        }
+
+        return (start..(end - needleSize)).firstOrNull { off ->
+            (0 until needleSize).all {
+                p -> mData[off + p] == needle[p]
+            }
+        } ?: -1
+    }
+
+    fun map(function: (Byte) -> Byte) = ImmutableByteArray(
+            mData = ByteArray(size) { function(mData[it]) }
+    )
+
+    override fun isEmpty() = mData.isEmpty()
+    fun addSlice(other: ImmutableByteArray, start: Int, len: Int) = this + other.sliceOffLen(start, len)
+    fun readASCII() = readLatin1() // ASCII is subset of Latin-1
+    fun readLatin1() = mData.map { (it.toInt() and 0xff).toChar() }.filter { it != 0.toChar() }.toCharArray()
+        .concatToString()
+    fun readUTF8(start: Int = 0, end: Int = size) = mData.decodeToString(startIndex = start, endIndex = end)
+    fun readUTF16(isLittleEndian: Boolean, start: Int = 0, end: Int = size): String {
+        val ret = if (isLittleEndian)
+            CharArray((end - start) / 2) { byteArrayToIntReversed(start + it * 2, 2).toChar() }.concatToString()
+        else
+            CharArray((end - start) / 2) { byteArrayToInt(start + it * 2, 2).toChar() }.concatToString()
+
+        if ((end - start) % 2 != 0) {
+            return ret + "\uFFFD"
+        }
+        return ret
+    }
+
+    fun readUTF16BOM(isLittleEndianDefault: Boolean, start: Int = 0, end: Int = size): String {
+        if (end < start + 2) {
+            return "\uFFFD"
+        }
+        return when (byteArrayToInt(0, 2)) {
+            0xFEFF -> readUTF16(isLittleEndian = false, start = 2 + start, end = end)
+            0xFFFE -> readUTF16(isLittleEndian = true, start = 2 + start, end = end)
+            else -> readUTF16(isLittleEndian = isLittleEndianDefault, start = start, end = end)
+        }
+    }
+
+    /**
+     * Returns a slice of the buffer, starting at [off], for up to [len] bytes (such that `off +
+     * len <= size`). This attempts to slice the buffer in a "safe" way (not returning exceptions),
+     * but returns `null` for invalid parameters (array out of bounds).
+     *
+     * @param off Starting offset of the buffer to read from. If `off < 0` or `off > size`, this
+     * method returns `null`.
+     *
+     * @param len Number of bytes to read from the buffer starting at [off]. If `len < 0`, this
+     * returns `null`. If `off + len > size`, [len] is truncated to not exceed the buffer.
+     *
+     * @returns A slice of the buffer in that range.
+     */
+    fun sliceOffLenSafe(off: Int, len: Int): ImmutableByteArray? {
+        if (off < 0 || len < 0 || off > size)
+            return null
+        val safeLen = minOf(len, size - off)
+        if (safeLen == 0)
+            return empty()
+        return sliceOffLen(off, safeLen)
+    }
+
+    fun last() = mData.last()
+    fun copyInto(
+        destination: ByteArray,
+        destinationOffset: Int = 0,
+        startIndex: Int = 0,
+        endIndex: Int = size) {
+        mData.copyInto(destination, destinationOffset, startIndex, endIndex)
+    }
+
+    fun copyIntod(
+        destination: ByteArray,
+        destinationOffset: Int = 0,
+        startIndex: Int = 0,
+        endIndex: Int = size
+    ) {
+        mData.copyInto(destination, destinationOffset, startIndex, endIndex)
+    }
+
+    override fun contains(element: Byte): Boolean = mData.contains(element)
+    override fun containsAll(elements: Collection<Byte>): Boolean =
+            elements.all { mData.contains(it) }
+    override fun iterator(): Iterator<Byte> = mData.iterator()
+
+    fun writeTo(os: Output) {
+        os.write(mData)
+    }
+
+    fun chunked(size: Int): List<ImmutableByteArray>
+            = chunked(size).map {
+        it.toByteArray().toImmutable()
+    }
+
+    infix fun xor(other: ImmutableByteArray) = ImmutableByteArray(size) {
+        mData[it] xor other[it]
+    }
+
+    fun indexOfFirstStarting(start: Int, predicate: (Byte) -> Boolean): Int {
+        for (idx in start until size) {
+            if (predicate(mData[idx]))
+                return idx
+        }
+        return -1
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    @Serializer(forClass = ImmutableByteArray::class)
+    class RawSerializer(override val descriptor: SerialDescriptor) : KSerializer<ImmutableByteArray> {
+        override fun serialize(encoder: Encoder, value: ImmutableByteArray) {
+            encoder.encodeSerializableValue(ByteArraySerializer(), value.mData)
+        }
+
+        override fun deserialize(decoder: Decoder): ImmutableByteArray = ImmutableByteArray(
+                decoder.decodeSerializableValue(ByteArraySerializer()))
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    @Serializer(forClass = ImmutableByteArray::class)
+    companion object : KSerializer<ImmutableByteArray> {
+        operator fun Byte.plus(second: ImmutableByteArray) = ImmutableByteArray(
+                mData = byteArrayOf(this) + second.mData)
+
+        fun fromHex(hex: String) = ImmutableByteArray(mData = hexStringToByteArray(hex))
+        fun fromByteArray(data: ByteArray) = ImmutableByteArray(mData = data.copyOf())
+        fun empty() = ImmutableByteArray(mData = byteArrayOf())
+        fun empty(length: Int) = ImmutableByteArray(mData = ByteArray(length))
+
+        fun of(vararg b: Byte) = ImmutableByteArray(mData = b)
+        fun ofB(vararg b: Number) = ImmutableByteArray(b.size) { i -> b[i].toByte() }
+
+        /**
+         * Given an unsigned integer value, calculate the two's complement of the value if it is
+         * actually a negative value
+         *
+         * @param input      Input value to convert
+         * @param highestBit The position of the highest bit in the number, 0-indexed.
+         * @return A signed integer containing it's converted value.
+         */
+        private fun unsignedToTwoComplement(input: Int, highestBit: Int) =
+                if (((input shr highestBit) and 1) == 1)
+                    input - (2 shl highestBit)
+                else input
+
+        fun getHexDump(b: ByteArray, offset: Int, length: Int): String {
+            val resultSb = StringBuilder()
+            for (i in 0 until length) {
+                resultSb.append(((b[i + offset].toInt() and 0xff) + 0x100).toString(16).substring(1))
+                if (i and 0xf == 0xf)
+                    resultSb.append('\n')
+                else if (i and 3 == 3 && i and 0xf != 0xf)
+                    resultSb.append(' ')
+            }
+            val result = resultSb.removeSuffix("\n").removeSuffix(" ")
+            return result.toString()
+        }
+
+        private fun hexStringToByteArray(s: String): ByteArray {
+            if (s.length % 2 != 0) {
+                throw IllegalArgumentException("Bad input string: $s")
+            }
+
+            return ByteArray(s.length / 2) {
+                ((hexDigitToInt(s[2 * it]) shl 4) or hexDigitToInt(s[2 * it + 1])).toByte()
+            }
+        }
+
+        private fun hexDigitToInt(c: Char): Int = when (c) {
+            in '0'..'9' -> c - '0'
+            in 'a'..'f' -> c - 'a' + 10
+            in 'A'..'F' -> c - 'A' + 10
+            else -> throw IllegalArgumentException("Bad hex digit $c")
+        }
+
+        fun getBitsFromBufferLeBits(buffer: ByteArray, iStartBit: Int, iLength: Int): Int {
+            // Note: Assumes little-endian bit-order
+            val iEndBit = iStartBit + iLength - 1
+            val iSByte = iStartBit / 8
+            val iSBit = iStartBit % 8
+            val iEByte = iEndBit / 8
+            val iEBit = iEndBit % 8
+
+            if (iSByte == iEByte) {
+                return (buffer[iEByte].toInt() shr iSBit) and (0xFF shr (8 - iLength))
+            }
+
+            var uRet = (buffer[iSByte].toInt() shr iSBit) and (0xFF shr iSBit)
+
+            for (i in (iSByte + 1) until iEByte) {
+                val t = ((buffer[i].toInt() and 0xFF) shl (((i - iSByte) * 8) - iSBit))
+                uRet = uRet or t
+            }
+
+            val t = (buffer[iEByte].toInt() and ((1 shl (iEBit + 1)) - 1)) shl (((iEByte - iSByte) * 8) - iSBit)
+            uRet = uRet or t
+
+            return uRet
+        }
+
+        /* Based on function from mfocGUI by 'Huuf' (http://www.huuf.info/OV/) */
+        fun getBitsFromBuffer(buffer: ByteArray, iStartBit: Int, iLength: Int): Int {
+            // Note: Assumes big-endian
+            val iEndBit = iStartBit + iLength - 1
+            val iSByte = iStartBit / 8
+            val iSBit = iStartBit % 8
+            val iEByte = iEndBit / 8
+            val iEBit = iEndBit % 8
+
+            if (iSByte == iEByte) {
+                return (buffer[iEByte].toInt() shr (7 - iEBit)) and (0xFF shr (8 - iLength))
+            }
+
+            var uRet = (buffer[iSByte].toInt() and (0xFF shr iSBit)) shl (((iEByte - iSByte - 1) * 8) + (iEBit + 1))
+
+            for (i in (iSByte + 1) until iEByte) {
+                val t = (buffer[i].toInt() and 0xFF) shl (((iEByte - i - 1) * 8) + (iEBit + 1))
+                uRet = uRet or t
+            }
+
+            val t = (buffer[iEByte].toInt() and 0xFF) shr (7 - iEBit)
+            uRet = uRet or t
+
+            return uRet
+        }
+
+        fun byteArrayToLong(b: ByteArray, offset: Int, length: Int): Long {
+            if (b.size < offset + length)
+                throw IllegalArgumentException("offset + length must be less than or equal to b.length")
+
+            var value = 0L
+            for (i in 0 until length) {
+                val shift = (length - 1 - i) * 8
+                value += (b[i + offset].toLong() and 0xFFL) shl shift
+            }
+            return value
+        }
+
+        fun fromASCII(s: String) = ImmutableByteArray(mData = s.map { it.code.toByte() }.toByteArray())
+
+        fun fromUTF8(s: String) = ImmutableByteArray(mData = s.encodeToByteArray())
+
+        override fun serialize(encoder: Encoder, value: ImmutableByteArray) {
+            encoder.encodeString(value.toHexString())
+        }
+
+        override val descriptor: SerialDescriptor = buildClassSerialDescriptor("ImmutableByteArray") {
+            // Define the structure of your class here
+            element<ByteArray>("mData")
+        }
+
+        override fun deserialize(decoder: Decoder): ImmutableByteArray {
+            return fromHex(decoder.decodeString())
+        }
+
+        fun fromBase64(input: String) = ImmutableByteArray(mData = decodeBase64(input) ?: throw Exception("Invalid base64: $input"))
+
+        fun getHexString(b: ByteArray): String = getHexString(b, 0, b.size)
+
+        fun getHexString(b: ByteArray, offset: Int, length: Int): String {
+            val result = StringBuilder()
+            for (i in offset until offset + length) {
+                result.append(((b[i].toInt() and 0xff) + 0x100).toString(16).substring(1))
+            }
+            return result.toString()
+        }
+    }
+}

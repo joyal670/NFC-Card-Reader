@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </androidx.viewpager2.widget.ViewPager2>
+
+    <LinearLayout
+        android:id="@+id/error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dip"
+        android:background="#FF4444"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/error_text"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/unknown_card"
+            android:gravity="center_vertical"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/unauthorized_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dip"
+        android:background="#FF4444"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/keys_required"
+            android:gravity="center_vertical"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+        <Button
+            android:id="@+id/load_keys"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="8dp"
+            android:text="@string/load_keys"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/unknown_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dip"
+        android:background="#FF8800"
+        android:visibility="gone"
+        android:text="@string/unknown_card_description"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+</LinearLayout>

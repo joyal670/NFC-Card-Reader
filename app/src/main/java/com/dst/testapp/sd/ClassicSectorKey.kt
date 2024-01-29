@@ -1,0 +1,152 @@
+/*
+ * ClassicSectorKey.kt
+ *
+ * Copyright 2012 Eric Butler <eric@codebutler.com>
+ * Copyright 2019 Google
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.dst.testapp.sd
+
+
+import com.dst.testapp.sd.ClassicKeysImpl.Companion.TRANSFORM_KEY
+import com.dst.testapp.sd.ClassicSectorKey.Companion.KEY_TYPE
+import com.dst.testapp.sd.ClassicSectorKey.Companion.KEY_VALUE
+import com.dst.testapp.sd.ClassicSectorKey.Companion.SECTOR_IDX
+import com.dst.testapp.sd.ClassicSectorKey.Companion.TYPE_KEYA
+import com.dst.testapp.sd.ClassicSectorKey.Companion.TYPE_KEYB
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlin.experimental.xor
+
+interface ClassicSectorAlgoKey {
+    fun resolve(tagId: ImmutableByteArray, sector: Int): ClassicSectorKey
+    fun toJSON(sector: Int): JsonObject
+    val bundle: String
+}
+
+data class TouchnGoKey (val key: ImmutableByteArray,
+                        val type: ClassicSectorKey.KeyType): ClassicSectorAlgoKey {
+    override fun toJSON(sector: Int): JsonObject = buildJsonObject {
+        when (type) {
+            ClassicSectorKey.KeyType.A -> put(KEY_TYPE, JsonPrimitive(TYPE_KEYA))
+            ClassicSectorKey.KeyType.B -> put(KEY_TYPE, JsonPrimitive(TYPE_KEYB))
+            else -> {
+            }
+        }
+        put(KEY_VALUE, JsonPrimitive(key.toHexString()))
+        put(SECTOR_IDX, JsonPrimitive(sector))
+        put(TRANSFORM_KEY, JsonPrimitive("touchngo"))
+    }
+
+    override fun resolve(tagId: ImmutableByteArray, sector: Int): ClassicSectorKey {
+        val pattern = ImmutableByteArray.of(
+                tagId[1] xor tagId[2] xor tagId[3],
+                tagId[1],
+                tagId[2],
+                (tagId[0] + tagId[1] + tagId[2] + tagId[3]).toByte() xor tagId[3],
+                0,
+                0
+        )
+        return ClassicSectorKey(
+                type = type,
+                key = key xor pattern,
+                bundle = bundle
+        )
+    }
+
+    override val bundle: String
+        get() = "touchngo"
+}
+
+@Serializable
+data class ClassicSectorKey internal constructor(
+        var type: KeyType,
+        override val bundle: String,
+        val key: ImmutableByteArray
+) : Comparable<ClassicSectorKey>, ClassicSectorAlgoKey {
+    override fun resolve(tagId: ImmutableByteArray, sector: Int): ClassicSectorKey = this
+
+    enum class KeyType {
+        UNKNOWN,
+        A,
+        B,
+        MULTIPLE;
+
+        fun inverse() = if (this == B) {
+            A
+        } else {
+            B
+        }
+
+        fun canon() = if (this == B) {
+            B
+        } else {
+            A
+        }
+
+        override fun toString() = if (this == B) {
+            TYPE_KEYB
+        } else {
+            TYPE_KEYA
+        }
+    }
+
+    override fun compareTo(other: ClassicSectorKey): Int {
+        val d = type.compareTo(other.type)
+        if (d != 0) return d
+
+        return key.compareTo(other.key)
+    }
+
+    fun invertType() = updateType(keyType = type.inverse())
+
+    fun canonType() = updateType(keyType = type.canon())
+
+    fun updateType(keyType: KeyType) = ClassicSectorKey(key = key,
+            type = keyType, bundle = bundle)
+
+    override fun toJSON(sector: Int): JsonObject = buildJsonObject {
+            when (type) {
+                KeyType.A -> put(KEY_TYPE, JsonPrimitive(TYPE_KEYA))
+                KeyType.B -> put(KEY_TYPE, JsonPrimitive(TYPE_KEYB))
+                else -> {
+                }
+            }
+            put(KEY_VALUE, JsonPrimitive(key.toHexString()))
+            put(SECTOR_IDX, JsonPrimitive(sector))
+            put(ClassicKeysImpl.KEY_BUNDLE, JsonPrimitive(bundle))
+        }
+
+    companion object {
+        internal const val CLASSIC_KEY_LEN = 6
+        internal const val AES_KEY_LEN = 16
+        const val KEY_TYPE = "type"
+        const val KEY_VALUE = "key"
+        const val SECTOR_IDX = "sector"
+        const val TYPE_KEYA = "KeyA"
+        const val TYPE_KEYB = "KeyB"
+
+        fun fromDump(b: ImmutableByteArray, type: KeyType, bundle: String): ClassicSectorKey {
+            if (b.size != CLASSIC_KEY_LEN && b.size != AES_KEY_LEN) {
+                throw IllegalArgumentException("Key data must be $CLASSIC_KEY_LEN or $AES_KEY_LEN bytes, got ${b.size}")
+            }
+
+            return ClassicSectorKey(key = b, type = type, bundle = bundle)
+        }
+    }
+}

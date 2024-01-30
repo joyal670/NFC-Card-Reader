@@ -67,6 +67,26 @@ class CardTripsFragment : ListFragment() {
             view.findViewById<View>(R.id.error_text).visibility = View.VISIBLE
         }
 
+        val items: Array<Trip>
+        if (trips.isNotEmpty()){
+            items = trips.toTypedArray()
+            for (p2 in 0 until items.count()) {
+
+                val trip = items[p2]
+                val date = trip.startTimestamp ?: trip.endTimestamp
+                val time = Trip.formatTimes(trip)
+                val agencyName = trip.getAgencyName(true)
+                val routeName = Trip.getRouteDisplayName(trip)
+                val is_transfr = trip.isTransfer
+                val is_rejec = trip.isRejected
+                val fare = trip.fare
+                val passengercount = trip.passengerCount
+                val stationText = Trip.formatStationNames(trip)
+                val vehicle_id = trip.vehicleID
+                val machine_id = trip.machineID
+            }
+        }
+
         return view
     }
 

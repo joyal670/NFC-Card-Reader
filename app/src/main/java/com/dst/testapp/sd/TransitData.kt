@@ -238,7 +238,7 @@ abstract class TransitData : Parcelable {
             if (rawLevel == RawLevel.NONE)
                 return inf
             val rawInf = transitData.getRawFields(rawLevel) ?: return inf
-            return inf.orEmpty() + listOf(HeaderListItem("Raw fields")) + rawInf
+            return inf.orEmpty() /*+ listOf(HeaderListItem("Raw fields")) + rawInf*/
         }
 
         fun hasInfo(transitData: TransitData): Boolean {

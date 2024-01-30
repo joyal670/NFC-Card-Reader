@@ -65,7 +65,7 @@ abstract class En1545LookupSTR protected constructor(protected val mStr: String)
             return null
         val res = subscriptionMapByAgency[Pair(agency, contractTariff)] ?: subscriptionMap[contractTariff] ?:
            return "Unknown $contractTariff)"
-        return "res"
+        return res
     }
 
     // TODO: move to MdST

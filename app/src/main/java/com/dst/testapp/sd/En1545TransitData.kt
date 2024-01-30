@@ -45,8 +45,8 @@ abstract class En1545TransitData : TransitData {
                 }
 
             if (mTicketEnvParsed.getIntOrZero(ENV_APPLICATION_ISSUER_ID) != 0)
-                li.add(ListItem("Issuer",
-                        lookup.getAgencyName(mTicketEnvParsed.getIntOrZero(ENV_APPLICATION_ISSUER_ID), false)))
+               // li.add(ListItem("Issuer", lookup.getAgencyName(mTicketEnvParsed.getIntOrZero(ENV_APPLICATION_ISSUER_ID), false)))
+                li.add(ListItem("Issuer", "Bus"))
 
             mTicketEnvParsed.getTimeStamp(ENV_APPLICATION_ISSUE, tz)?.let {
                 li.add(ListItem("Date of issue", it.format()))

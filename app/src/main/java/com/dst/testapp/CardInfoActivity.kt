@@ -46,6 +46,7 @@ import com.dst.testapp.sd.UnauthorizedClassicTransitData
 import com.dst.testapp.sd.UnsupportedCardException
 import com.dst.testapp.sd.Utils
 import com.dst.testapp.sd.XmlOrJsonCardFormat
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -146,6 +147,7 @@ class CardInfoActivity : AppCompatActivity() {
 
     fun showCardInfo(savedInstanceState: Bundle?, card: Card,
                      transitData: TransitData?) {
+        Log.e(TAG, "showCardInfo:transitData ${Gson().toJson(transitData)}" )
         val viewPager = findViewById<ViewPager2>(R.id.pager)
 
         findViewById<View>(R.id.loading).visibility = View.GONE

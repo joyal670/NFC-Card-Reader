@@ -21,6 +21,7 @@
 package com.dst.testapp.sd
 
 import android.os.Parcelable
+import android.util.Log
 import com.dst.testapp.R
 
 
@@ -337,6 +338,8 @@ abstract class Trip : Parcelable {
         fun formatTimes(trip: Trip): String? {
             val start = trip.startTimestamp
             val end = trip.endTimestamp
+            Log.e("TAG", "formatTimes: start $start")
+            Log.e("TAG", "formatTimes: end $end")
             return when {
                 start is TimestampFull && end is TimestampFull ->
                     "${TimestampFormatter.timeFormat(start)} - ${TimestampFormatter.timeFormat(end)}"

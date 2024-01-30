@@ -58,7 +58,6 @@ class CardTripsFragment : ListFragment() {
         val view = inflater.inflate(R.layout.fragment_card_trips, null)
 
         val trips = mTransitData?.prepareTrips().orEmpty()
-        Log.e(TAG, "onCreateView: ${Gson().toJson(trips)}", )
 
         if (trips.isNotEmpty()) {
             listAdapter = UseLogListAdapter(requireActivity(), trips.toTypedArray())
@@ -179,9 +178,12 @@ class CardTripsFragment : ListFragment() {
             } else
                 timeTextView.visibility = View.INVISIBLE
 
+            Log.e(TAG, "getView:time $time" )
+
             val routeText = SpannableStringBuilder()
 
             val agencyName = trip.getAgencyName(true)
+
             Log.e(TAG, "getView:agencyName $agencyName" )
             /*if (agencyName != null) {
                 routeText.append(agencyName)

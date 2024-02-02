@@ -147,6 +147,7 @@ class CardTripsFragment : ListFragment() {
             val paxIcon = convertView.findViewById<ImageView>(R.id.pax_icon)
             val paxTextView = convertView.findViewById<TextView>(R.id.pax_text_view)
             val machineIdTextView = convertView.findViewById<TextView>(R.id.machine_id_text_view)
+            val detailTextView = convertView.findViewById<TextView>(R.id.details_text_view)
 
             @StringRes val modeContentDescriptionRes: Int = trip.mode.contentDescription
             val iconArrayRes = getStyledRes(context, R.attr.TransportIcons)
@@ -198,8 +199,8 @@ class CardTripsFragment : ListFragment() {
 
             if (Preferences.rawLevel != TransitData.RawLevel.NONE) {
                 val raw = trip.getRawFields(Preferences.rawLevel)
-                /*if (raw != null)
-                    routeText.append(" <").append(raw).append(">")*/
+                if (raw != null)
+                    routeText.append(" <").append(raw).append(">")
             }
 
             if (routeText.isNotEmpty()) {
@@ -262,6 +263,44 @@ class CardTripsFragment : ListFragment() {
                     machineIdTextView.visibility = View.VISIBLE
                 }
                 else -> machineIdTextView.visibility = View.GONE
+            }
+
+            if (routeName != null) {
+
+                val detailsText = SpannableStringBuilder()
+
+                // checking for card
+                // if routeName contains /x30 -> agent
+                if(routeName.contains("/")){
+                    detailsText.append("Agent Card Detected \n")
+                } else {
+                    detailsText.append("User Card Detected \n")
+                }
+
+                val raw = trip.getRawFields(Preferences.rawLevel)
+                if (raw != null){
+                   // detailsText.append(" <").append(raw).append(">")
+                    val eventData = parseEventData(raw)
+                    Log.e(TAG, "getView:eventData $eventData", )
+                    if(eventData.eventCode == 0x1){
+                        detailsText.append("Normal check-in")
+                    } else if (eventData.eventCode == 0x2){
+                        detailsText.append("Normal check-out")
+                    } else if (eventData.eventCode == 0x6){
+                        detailsText.append("Transfer in")
+                    } else if (eventData.eventCode == 0x7) {
+                        detailsText.append("Transfer out")
+                    } else if (eventData.eventCode == 0x8){
+                        detailsText.append("Force out-in")
+                    } else {
+                        detailsText.append("Unknown")
+                    }
+
+                    detailsText.append("\n----------------")
+                }
+
+
+                detailTextView.text = detailsText
             }
 
             return convertView

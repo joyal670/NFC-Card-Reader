@@ -314,8 +314,8 @@ abstract class Trip : Parcelable {
          * This handles the "showRawStationIds" setting.
          */
         fun getRouteDisplayName(trip: Trip): String? {
-            if (!Preferences.showRawStationIds)
-                return trip.routeName
+           /* if (!Preferences.showRawStationIds)
+                return trip.routeName*/
             val routeName = trip.routeName
             val routeID = trip.humanReadableRouteID ?: return routeName
 

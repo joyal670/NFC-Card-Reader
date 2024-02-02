@@ -65,6 +65,16 @@
               android:gravity="start|center_vertical"
               android:textAlignment="viewStart"
               tools:text="Machine #1234" />
+
+
+            <TextView
+                android:id="@+id/details_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:textAlignment="viewStart"
+                tools:text="Machine #1234"
+                android:textColor="#FF0000"/>
         </LinearLayout>
 
         <LinearLayout
